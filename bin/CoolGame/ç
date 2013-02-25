@@ -1,0 +1,13 @@
+<html>
+<head>
+<script type="text/javascript" src="../../closure/closure/goog/base.js"></script>
+<script src="libs/three.js"></script>
+<script src="libs/jquery.js"></script>
+<script src ="CoolVisual.js"></script>
+<script src="game/cooly.js"></script>
+<script src="game.js"></script>
+
+</head>
+
+<body onload="CoolGame.start()"></body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+	<title>CoolGame</title>
+	<script type="text/javascript" src="../closure/closure/goog/base.js"></script>
+	<script type="text/javascript" src="CoolGame.js"></script>
+</head>
+
+<body onload="CoolGame.start()"></body>
+
+</html>
