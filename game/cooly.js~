@@ -1,0 +1,38 @@
+var NONE = "none";
+var COOLY = function(parameters){
+    this.hability = NONE;
+    this.velocity = 5;
+	this.createVisual = function(){
+		return (new Sprite)
+        .fill("assets/peludin.png")
+	    .size(60, 60);
+	}
+}
+
+var COOLYEMITTER = function(parameters){
+    this.sequence = parameters.sequence;
+    this.getNext = function(time){
+        var r = false;
+        if(this.sequence[0]){
+            if(this.sequence[0].lastTime >= 2500){
+                console.log(this.sequence[0].lastTime)
+                var r = new COOLY(this.sequence[0].cooly);
+                this.sequence[0].many --;
+                this.sequence[0].lastTime = 0;
+                if(this.sequence[0].many <= 0){
+                    this.sequence = this.sequence.splice(1);
+					return r
+				}
+            }
+            else
+                this.sequence[0].lastTime += time //- this.sequence[0].time;
+            this.sequence[0].time = time;
+        }
+        return r;
+    }
+	this.createVisual = function(){
+        return (new Sprite)
+        .fill("assets/out.png")
+	    .size(150, 150);
+	}
+}
