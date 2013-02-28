@@ -1,17 +1,3 @@
-# LimeJS is originally developed by Digital Fruit http://www.digitalfruit.eu/
-# Everyone can help along by sending patches,optimizations, new features etc.
+#The game is being produced by KLV wkaleuve@gmail.com programming and game design and Hell Kinght Dan http://hellknightdan.deviantart.com/ graphics
 
-# This is a list of contributors to Lime.
-Tõnis Tiigi <tonis@digitalfruit.info>
-Pavel Jartsev <papi@digitalfruit.info>
-Anders Lauritsen <ducklord@gmail.com>
-Rob O'Dwyer <odwyerrob@gmail.com>
-Carsten Moberg Hammer <moberg@komogvind.dk>
-Russ <russplaysguitar@yahoo.com>
-Michael Sawyer <msawyer4@mail.csuchico.edu>
-Grady O'Connell <flipcoder@gmail.com>
-Caleb Callaway <enlightened.despot@gmail.com>
-Mathieu ATTAL <zapoutix@gmail.com>
-Sean Stringer <sstringa@gmail.com>
-Marc Mauger <simianarmy@gmail.com>
-James Chen <flufy3d@gmail.com>
+The game uses limejs http://www.limejs.com/ for graphics and box2d for physics
