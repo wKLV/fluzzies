@@ -26,7 +26,7 @@
 
         <section id="play">
             <a href="game.html?0"> <h3 style="text-align:center">Just go and play!</h3></a>
-<img src="Instrucciones.gif"></img>
+<img src="instrucciones.gif"></img>
         </section>
         <section id="about">
             <p>This is the homepage of the fluzzies game. TODO: Write more</p>
