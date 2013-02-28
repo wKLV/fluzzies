@@ -1,4 +1,4 @@
-{"emitter":{"sequence":{"cooly":{"hability":"none","velocity":5},"many":100,"time":5000,"lastTime":0},"position":[247,501]},"catcher":{"position":[983,138],"pass":{"coolies":15}, "star1":{"coolies":50}, "star2":{"coolies":15, "touches":2}, "star3":{"coolies":95, "touches":3}},
+{"emitter":{"sequence":{"cooly":{"hability":"none","velocity":5},"many":50,"time":5000,"lastTime":0},"position":[247,501]},"catcher":{"position":[983,138],"pass":{"coolies":15}, "star1":{"coolies":30}, "star2":{"coolies":15, "touches":3}, "star3":{"coolies":50, "touches":3}},
 "grounds":[
 	{"shape":[{"x":105,"y":1200},{"x":360,"y":1320},{"x":330,"y":1404},{"x":106,"y":1384}],"position":{"x":-4,"y":-537}},
 	{"shape":[{"x":247.60978384527868,"y":368.04444141069393},{"x":254.60978384527868,"y":274.04444141069393},{"x":322.6097838452787,"y":274.04444141069393},{"x":314.6097838452787,"y":380.04444141069393}],"position":{"x":330.3902161547213,"y":484.95555858930607}},
