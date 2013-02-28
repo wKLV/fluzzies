@@ -19,7 +19,7 @@ CoolGame.start = function(){
     star3 = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
     checkStars, passed = false, reset, resetlabel = new Label("reset").moveTo(460,10),
     timeplus = new Label("Accelerate time").moveTo(1450, 810).event(["mousedown", "touchstart"], function(e){
-        emitter.i.i += 5;
+        emitter.i.i += 5, speed += 0.5;
     });
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
@@ -73,15 +73,12 @@ CoolGame.start = function(){
             nballs = 0, ntouches = powers.length;
             nballslabel.text(""+nballs);
             ntoucheslabel.text(""+ntouches);
+            speed = 1;
 
         });
-       function createGround(v){
-            var shape = v.shape, position= v.position, l = [];
-            $.each(shape, function(i,v){
-                l.push([shape[i].x, shape[i].y])
-                shape[i] = new goog.math.Coordinate(shape[i].x, shape[i].y)
-            });
-            position = new box2d.Vec2(position.x, position.y)
+       function createGround(v, l){
+            var position= v.position;
+           position = new box2d.Vec2(position.x, position.y)
             ground = new box2d.PolyDef;
             ground.restitution = .6
             ground.density = 0;
@@ -96,20 +93,32 @@ CoolGame.start = function(){
        }
         $.each(data.grounds, function(i,v){
             if(v.shape){
-                createGround(v);
-                 var shape = v.shape, position= v.position, l = [];
+                var shape = v.shape, position= v.position, l = [];
+                $.each(shape, function(i,v){
+                    l.push([shape[i].x, shape[i].y])
+                    shape[i] = new goog.math.Coordinate(shape[i].x, shape[i].y)
+                });
+
+                createGround(v, l);
+                var shape = v.shape, position= v.position, l = [];
                 var vis = new Polygon(shape).fill("assets/Metal.png").stroke(3, 'rgb(0,0,0)').moveTo(position.x, position.y);
                 layer.add(vis);
             }
             else if(v.megashape){
                 $.each(v.megashape, function(i,v){
-                     var shape = v.shape, position= v.position, l = [];
-                    if(v.shape)
-                        createGround(v);
-                    if(v.visual){
-                        var vis = new Polygon(v.shape).fill("assets/Metal.png").stroke(3, 'rgb(0,0,0)').moveTo(position.x, position.y);
+                    var shape = v.shape, position= v.position, l = [];
+                    $.each(shape, function(i,v){
+                        l.push([shape[i].x, shape[i].y])
+                        shape[i] = new goog.math.Coordinate(shape[i].x, shape[i].y)
+                     });
+
+                     if(v.visual){
+                        var vis = new Polygon(v.shape).fill("assets/Metal.png").stroke(3, 'rgb(0,0,0)').
+                            moveTo(position.x, position.y);
                         layer.add(vis);
                     }
+                    else if(v.shape)
+                        createGround(v, l);
                 });
             }
         });
@@ -236,11 +245,10 @@ i
     bin.density = 0;
     bin.SetVertices([[-75,75],[-75,-75],[75,-75],[75,75]])
 
-
     scene.substitute(scene.scene);
     var listener = {}, todelete = {}, ntodelete = {};
     listener.PreSolve = function(a,b){
-        if(a.GetUserData().name === "cooly" && typeof todelete[a.GetUserData().id] === "undefined"){
+        if(a.GetUserData().name === "cooly" && ! deleted[a.GetUserData().id]){
             if(b.GetUserData().name === "spikes")
                 return a;
             else if(b.GetUserData().name === "in"){
@@ -258,7 +266,7 @@ i
                 return a;
             }
         }
-        else if(b.GetUserData().name === "cooly" && typeof todelete[b.GetUserData().id] === "undefined")
+        else if(b.GetUserData().name === "cooly" && ! deleted[b.GetUserData().id])
             if(a.GetUserData().name === "spikes")
                 return b;
             else if(a.GetUserData().name === "in"){
@@ -277,103 +285,109 @@ i
                 return b;
             }
     }
-
+    var step = 2, speed =1, deleted = {};
     lime.scheduleManager.schedule(function(dt) {if(ready){
+        if(speed> 2.5) speed = 2.5
         $.each(todelete, function(i,a){
             var v = balls[a.GetUserData().id]
             function reduce(){
                 var s = v.visual.scale().x;
                 var r = v.visual.rotation()
                 v.visual.rotation(r+ dt/s)
-                v.visual.scale(s-0.05, s-0.05)
-                if(s > 0.1) setTimeout(reduce, 2000);
+                v.visual.scale(s-0.1, s-0.1)
+                if(s > 0.1) setTimeout(reduce, 50);
                 else {layer.rem(v.visual);
-                    world.DestroyBody(a);
                     delete balls[v.ids];
                 }
             }
+            world.DestroyBody(a);
             reduce();
             //layer.rem(a.GetUserData().visual);
         });
-        $.each(powers, function(i,p){
+        todelete = {};
+        var steps = Math.floor(dt / step)
+        if(steps > 40) steps = 40;
+        for(var i=0; i< steps; i++){
+            $.each(powers, function(i,p){
+                $.each(balls, function(i,v){
+
+                    var d = v.physics.GetCenterPosition().Copy().subtract(p.visual.getPos());
+                    var dlength = d.Normalize()
+                    if(dlength<5)
+                        dlength = 5;
+                    if(p.power === "anti" && dlength < 150){
+                        if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
+                            v.physics.ApplyTorque(1);
+                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(1280*step*speed, d), p.visual.getPos());
+                    }
+                    if(dlength <30) dlength = 30
+                    else if(p.power === "atra" && dlength <150){
+                        if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
+                            v.physics.ApplyTorque(10);
+                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(-1280*step*speed, d), p.visual.getPos());
+                    }
+                    else if(p.power === "accele" && dlength <150)
+                        v.physics.ApplyTorque(2000000*step*speed)
+            });
+                p.updateEffects(5);
+            })
+            world.Step(step/1000*speed, 8);
             $.each(balls, function(i,v){
-
-                var d = v.physics.GetCenterPosition().Copy().subtract(p.visual.getPos());
-                var dlength = d.Normalize()
-                if(dlength<5)
-                    dlength = 5;
-                if(p.power === "anti" && dlength < 150){
-                    if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
-                        v.physics.ApplyTorque(1);
-                    v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(800*dt, d), p.visual.getPos());
-                }
-                if(dlength <30) dlength = 30
-                else if(p.power === "atra" && dlength <150){
-                    if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
-                        v.physics.ApplyTorque(10);
-                    v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(-800*dt, d), p.visual.getPos());
-                }
-                else if(p.power === "accele" && dlength <150)
-                    v.physics.ApplyTorque(300000*dt)
-        });
-            p.updateEffects(dt);
-        })
-
-        world.Step(dt / 1000, 3);
-        $.each(balls, function(i,v){
-            if(Math.abs(v.physics.GetAngularVelocity())>10)
-                if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
-                    v.visual.fill("assets/pelusa"+v.hab+"eyesmouth.png")
-                else
-                    if(v.visual.fill() === "assets/pelusa"+v.hab+"eyesmouth.png" || v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png")
-                        setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+"eyesmouth.png");},1000);
+                if(Math.abs(v.physics.GetAngularVelocity())>10)
+                    if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
+                        v.visual.fill("assets/pelusa"+v.hab+"eyesmouth.png")
                     else
-                        v.visual.fill("assets/pelusa"+v.hab+"eyes.png")
-            else
-                if(Math.abs(v.physics.GetLinearVelocity().magnitude()) > 100 && v.physics.GetContactList())
-                    v.visual.fill("assets/pelusa"+v.hab+"mouth.png")
+                        if(v.visual.fill() === "assets/pelusa"+v.hab+"eyesmouth.png" || v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png")
+                            setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+"eyes.png");},1000);
+                        else
+                            v.visual.fill("assets/pelusa"+v.hab+"eyes.png")
                 else
-                    if(v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png" || v.visual.fill() == "assets/pelusa"+v.hab+"yesmouth.png")
-                        setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+"mouth.png");},1000);
+                    if(Math.abs(v.physics.GetLinearVelocity().magnitude()) > 100 && v.physics.GetContactList())
+                        v.visual.fill("assets/pelusa"+v.hab+"mouth.png")
                     else
-                        v.visual.fill("assets/pelusa"+v.hab+".png")
+                        if(v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png" || v.visual.fill() == "assets/pelusa"+v.hab+"yesmouth.png")
+                            setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+".png");},1000);
+                        else
+                            v.visual.fill("assets/pelusa"+v.hab+".png")
 
 
-            var pos = v.physics.GetCenterPosition().clone();
-            var rot = v.physics.GetRotation();
+                var pos = v.physics.GetCenterPosition().clone();
+                var rot = v.physics.GetRotation();
 
-            v.visual.rotation(-rot/Math.PI*180);
-            v.visual.moveTo(pos.x, pos.y);
-        });
-        var c = emitter.getNext(dt);
-        if(c){
-            emitter.visual.fill("assets/in-open.svg")
-            setTimeout(function(){emitter.visual.fill("assets/in.svg")}, 1500);
-            ids ++;
-            var hab = c.hability;
-            switch(c.hability){
-                case "none": ballDef = normalDef; break
-                case "heavy": ballDef = heavyDef; break;
+                v.visual.rotation(-rot/Math.PI*180);
+                v.visual.moveTo(pos.x, pos.y);
+            });
+            var c = emitter.getNext(dt);
+            if(c){
+                emitter.visual.fill("assets/in-open.svg")
+                setTimeout(function(){emitter.visual.fill("assets/in.svg")}, 1500);
+                ids ++;
+                var hab = c.hability;
+                switch(c.hability){
+                    case "none": ballDef = normalDef; break
+                    case "heavy": ballDef = heavyDef; break;
+                }
+                var c = c.createVisual().moveTo(emitter.position[0], emitter.position[1]);
+                var ballDef;
+                var v = new box2d.BodyDef;
+                v.userData = {name:"cooly", visual:c,hab:hab, id:ids};
+                v.position.Set(emitter.position[0], emitter.position[1]);
+                v.angularDamping = 0;
+                v.id = ids;
+                v.AddShape(ballDef);
+                v = world.CreateBody(v);
+                balls[ids] = {visual:c, physics:v, hab:hab, ids:ids};
+                layer.add(c);
             }
-            var c = c.createVisual();
-            var ballDef;
-            var v = new box2d.BodyDef;
-            v.userData = {name:"cooly", visual:c,hab:hab, id:ids};
-            v.position.Set(emitter.position[0], emitter.position[1]);
-            v.angularDamping = 0;
-            v.id = ids;
-            v.AddShape(ballDef);
-            v = world.CreateBody(v);
-            balls[ids] = {visual:c, physics:v, hab:hab};
-            layer.add(c);
         }
-        for(var c=world.GetContactList(); c; c = c.GetNext()){
-            var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
-            if(a) todelete[a.GetUserData().id] = a;
+            for(var c=world.GetContactList(); c; c = c.GetNext()){
+                var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
+                if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
+            }
+              //  todelete;
+              //  ntodelete = {};
         }
-          //  todelete;
-          //  ntodelete = {};
-     }},this);
+     },this);
 
      background.event(["mousedown", "touchstart"], function(e){
        /* if(power){
