@@ -1,3 +1,4 @@
+var speed = 1;
 CoolGame.start = function(){
     var map, ready = false,
     emitter,
@@ -10,16 +11,16 @@ CoolGame.start = function(){
         moveTo(750, 500).fill("assets/fondo1.png"),
     labels = new Node,
     nballslabel = new Label("0").moveTo(90,10),
-    nballs = 0, ballsSavedlabel = new Label("pelusas salvadas").moveTo(160, 10),
+    nballs = 0, ballsSavedlabel = new Label("fluzzies saved").moveTo(160, 10),
     ntouches = 0, ntoucheslabel = new Label("0").moveTo(260,10),
-    tocheslabel = new Label("toques").moveTo(290, 10),
+    tocheslabel = new Label("touches").moveTo(290, 10),
     pass = new Sprite().size(20,20).fill("assets/door.svg").moveTo(330, 10),
     star1 = new Sprite().size(20,20).fill("assets/star.svg").moveTo(360, 10),
     star2 = new Sprite().size(20,20).fill("assets/star.svg").moveTo(390, 10),
     star3 = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
-    checkStars, passed = false, reset, resetlabel = new Label("reset").moveTo(460,10),
-    timeplus = new Label("Accelerate time").moveTo(1450, 810).event(["mousedown", "touchstart"], function(e){
-        emitter.i.i += 5, speed += 0.5;
+    checkStars, passed = false, reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
+    timeplus = new Sprite().fill("assets/timeplus.svg").size(50,50).moveTo(1420, 30).event(["mousedown", "touchstart"], function(e){
+        emitter.i.i = 25, speed = 2.25;
     });
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
@@ -236,7 +237,7 @@ i
 
     var heavyDef = new box2d.CircleDef;
     heavyDef.radius = 15;
-    heavyDef.density = 5;
+    heavyDef.density = 4;
     heavyDef.restitution = 0.1;
     heavyDef.friction = 0.7;
 
@@ -285,9 +286,9 @@ i
                 return b;
             }
     }
-    var step = 2, speed =1, deleted = {};
+    var step = 2, deleted = {};
     lime.scheduleManager.schedule(function(dt) {if(ready){
-        if(speed> 2.5) speed = 2.5
+        if(speed> 2.25) speed = 2.25
         $.each(todelete, function(i,a){
             var v = balls[a.GetUserData().id]
             function reduce(){
@@ -305,7 +306,7 @@ i
             //layer.rem(a.GetUserData().visual);
         });
         todelete = {};
-        var steps = Math.floor(dt / step)
+        var steps = Math.floor(dt / step * speed)
         if(steps > 40) steps = 40;
         for(var i=0; i< steps; i++){
             $.each(powers, function(i,p){
@@ -318,20 +319,21 @@ i
                     if(p.power === "anti" && dlength < 150){
                         if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
                             v.physics.ApplyTorque(1);
-                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(1280*step*speed, d), p.visual.getPos());
+                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(1280*step, d), p.visual.getPos());
                     }
                     if(dlength <30) dlength = 30
                     else if(p.power === "atra" && dlength <150){
                         if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
                             v.physics.ApplyTorque(10);
-                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(-1280*step*speed, d), p.visual.getPos());
+                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(-1280*step, d), p.visual.getPos());
                     }
                     else if(p.power === "accele" && dlength <150)
-                        v.physics.ApplyTorque(2000000*step*speed)
+                        v.physics.ApplyTorque(2000000*step)
             });
-                p.updateEffects(5);
+                p.updateEffects(step);
             })
-            world.Step(step/1000*speed, 8);
+            world.Step(step/1000, 8);
+	if(i%step !== 0){
             $.each(balls, function(i,v){
                 if(Math.abs(v.physics.GetAngularVelocity())>10)
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
@@ -357,6 +359,7 @@ i
                 v.visual.rotation(-rot/Math.PI*180);
                 v.visual.moveTo(pos.x, pos.y);
             });
+	}
             var c = emitter.getNext(dt);
             if(c){
                 emitter.visual.fill("assets/in-open.svg")

@@ -5,7 +5,7 @@
                 "hability": "none",
                 "velocity": 5
             },
-            "many": 100,
+            "many": 50,
             "time": 5000
         },
         "position": [
@@ -22,15 +22,15 @@
             "coolies": 15
         },
         "star1": {
-            "coolies": 95
+            "coolies": 45
         },
         "star2": {
             "coolies": 15,
-            "touches": 2
+            "touches": 4
         },
         "star3": {
-            "coolies": 100,
-            "touches": 1
+            "coolies": 50,
+            "touches": 4
         }
     },
     "grounds": [       
