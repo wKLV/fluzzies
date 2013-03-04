@@ -17,11 +17,13 @@ function win(){
   var currentlevel = parseInt(document.URL.split("?")[1]);
   $("#success").show().css("margin-left","auto").css("margin-right", "auto").css("left","0").css("right","0");
   var w = window;
- document.getElementById("success").contentDocument.defaultView.window.disqus_identifier ='level'+ currentlevel;
- document.getElementById("success").contentDocument.defaultView.window.disqus_title = 'level'+ currentlevel;
- document.getElementById("success").contentDocument.defaultView.window.disqus_url = w.location.href;
-  document.getElementById("success").onload = function(){
     var doc = document.getElementById("success").contentDocument;
+
+  doc.defaultView.window.disqus_identifier ='level'+ currentlevel;
+  doc.defaultView.window.disqus_title = 'level'+ currentlevel;
+  doc.defaultView.window.disqus_url = w.location.href;
+  document.getElementById("success").onload = function(){
+
     if(star1) doc.getElementById("star1").src = "assets/stargot.svg"
     if(star2) doc.getElementById("star2").src = "assets/stargot.svg"
     if(star3) doc.getElementById("star3").src = "assets/stargot.svg"

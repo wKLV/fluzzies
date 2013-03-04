@@ -23,7 +23,7 @@ function win(){
   doc.defaultView.window.disqus_title = 'level'+ currentlevel;
   doc.defaultView.window.disqus_url = w.location.href;
   document.getElementById("success").onload = function(){
-
+    var doc = document.getElementById("success").contentDocument;
     if(star1) doc.getElementById("star1").src = "assets/stargot.svg"
     if(star2) doc.getElementById("star2").src = "assets/stargot.svg"
     if(star3) doc.getElementById("star3").src = "assets/stargot.svg"
