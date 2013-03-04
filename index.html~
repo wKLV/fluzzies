@@ -10,7 +10,7 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>Fluzzies by wKLV</title>
+    <title>Fluzzies</title>
   </head>
 
   <body style="background-image:url(assets/fondo.png);background-attachment:fixed;background-position:center-bottom;background-repeat:no-repeat;background-size:contain">
@@ -25,11 +25,11 @@
         <hr>
 
         <section id="play">
-            <a href="game.html?0"> <h3 style="text-align:center">Just go and play!</h3></a>
-<img src="instrucciones.gif"></img>
+            <a href="game.html?0"> <h3 style="text-align:center">Just go and play!</h3>
+<img src="Instrucciones.gif"></img></a>
         </section>
         <section id="about">
-            <p>This is the homepage of the fluzzies game. TODO: Write more</p>
+            <p>This is the homepage of the fluzzies game</p>
         </section>
         <section id="develop" class="clearfix">
             <p> Watch how fluzzies is being made and get involved if you want to!</p>

@@ -332,7 +332,7 @@ i
                 p.updateEffects(step);
             })
             world.Step(step/1000, 8);
-	if(i%speed === 0){
+	if(i%step !== 0){
             $.each(balls, function(i,v){
                 if(Math.abs(v.physics.GetAngularVelocity())>10)
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())

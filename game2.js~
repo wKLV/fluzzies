@@ -20,7 +20,7 @@ CoolGame.start = function(){
     star3s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
     checkStars, passed = false, reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
     timeplus = new Sprite().fill("assets/timeplus.svg").size(50,50).moveTo(1420, 30).event(["mousedown", "touchstart"], function(e){
-        emitter.i.i = 25, speed = 4;
+        emitter.i.i = 25, speed = 2.25;
     });
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
@@ -49,18 +49,18 @@ CoolGame.start = function(){
         binbodydef.userData = {name:"in", visual:basein}
 
         basein.event(["mousedown", "touchstart"], function(e){
-            if(passed) win();
+            if(passed) window.location.href = params[0]+ "?" + (parseInt(params[1])+1)
         })
         bain = basein, basein = data.catcher;
         checkStars = function(){
             if(nballs >= basein.pass.coolies && (ntouches <= basein.pass.touches || typeof basein.pass.touches === "undefined")){
                 passed = true; bain.fill("assets/in-open.svg"); pass.fill("assets/doorgot.svg");
             }if(nballs >= basein.star1.coolies && (ntouches <= basein.star1.touches || typeof basein.star1.touches === "undefined")){
-               star1s.fill("assets/stargot.svg"); star1 = true;
+               star1.fill("assets/stargot.svg"); star1 = true;
             }if(nballs >= basein.star2.coolies && (ntouches <= basein.star2.touches || typeof basein.star2.touches === "undefined")){
-               star2s.fill("assets/stargot.svg");star2= true;
+               star2.fill("assets/stargot.svg");star2= true;
             }if(nballs >= basein.star3.coolies && (ntouches <= basein.star3.touches || typeof basein.star3.touches === "undefined")){
-                star3s.fill("assets/stargot.svg");star3=true; win();
+                star3.fill("assets/stargot.svg");star3=true; win();
             }
         }
         resetlabel.event(["mousedown", "touchstart"],function(){
@@ -288,6 +288,7 @@ i
     }
     var step = 2, deleted = {};
     lime.scheduleManager.schedule(function(dt) {if(ready){
+        if(speed> 2.25) speed = 2.25
         $.each(todelete, function(i,a){
             var v = balls[a.GetUserData().id]
             function reduce(){
@@ -332,7 +333,7 @@ i
                 p.updateEffects(step);
             })
             world.Step(step/1000, 8);
-	if(i%speed === 0){
+	if(i%step !== 0){
             $.each(balls, function(i,v){
                 if(Math.abs(v.physics.GetAngularVelocity())>10)
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
