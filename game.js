@@ -1,4 +1,4 @@
-var speed = 1, star1 = star2 = star3 = false;
+var speed = 1, star1 = star2 = star3 = false, Step = 5;
 CoolGame.start = function(){
     var map, ready = false,
     emitter,
@@ -20,7 +20,7 @@ CoolGame.start = function(){
     star3s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
     checkStars, passed = false, reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
     timeplus = new Sprite().fill("assets/timeplus.svg").size(50,50).moveTo(1420, 30).event(["mousedown", "touchstart"], function(e){
-        emitter.i.i = 25, speed = 4;
+        emitter.i.i = 15, speed = 4;
     });
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
@@ -286,7 +286,7 @@ i
                 return b;
             }
     }
-    var step = 2, deleted = {};
+    var step = Step, deleted = {};
     lime.scheduleManager.schedule(function(dt) {if(ready){
         $.each(todelete, function(i,a){
             var v = balls[a.GetUserData().id]
@@ -305,8 +305,7 @@ i
             //layer.rem(a.GetUserData().visual);
         });
         todelete = {};
-        var steps = Math.floor(dt / step * speed)
-        if(steps > 40) steps = 40;
+        var steps = Math.floor(dt / Step * speed)
         for(var i=0; i< steps; i++){
             $.each(powers, function(i,p){
                 $.each(balls, function(i,v){
@@ -332,7 +331,29 @@ i
                 p.updateEffects(step);
             })
             world.Step(step/1000, 8);
-	if(i%speed === 0){
+ 	    var c = emitter.getNext();
+            if(c){
+                emitter.visual.fill("assets/in-open.svg")
+                setTimeout(function(){emitter.visual.fill("assets/in.svg")}, 1500);
+                ids ++;
+                var hab = c.hability;
+                switch(c.hability){
+                    case "none": ballDef = normalDef; break
+                    case "heavy": ballDef = heavyDef; break;
+                }
+                var c = c.createVisual().moveTo(emitter.position[0], emitter.position[1]);
+                var ballDef;
+                var v = new box2d.BodyDef;
+                v.userData = {name:"cooly", visual:c,hab:hab, id:ids};
+                v.position.Set(emitter.position[0], emitter.position[1]);
+                v.angularDamping = 0;
+                v.id = ids;
+                v.AddShape(ballDef);
+                v = world.CreateBody(v);
+                balls[ids] = {visual:c, physics:v, hab:hab, ids:ids};
+                layer.add(c);
+            }
+            }
             $.each(balls, function(i,v){
                 if(Math.abs(v.physics.GetAngularVelocity())>10)
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
@@ -358,30 +379,7 @@ i
                 v.visual.rotation(-rot/Math.PI*180);
                 v.visual.moveTo(pos.x, pos.y);
             });
-	}
-            var c = emitter.getNext(dt);
-            if(c){
-                emitter.visual.fill("assets/in-open.svg")
-                setTimeout(function(){emitter.visual.fill("assets/in.svg")}, 1500);
-                ids ++;
-                var hab = c.hability;
-                switch(c.hability){
-                    case "none": ballDef = normalDef; break
-                    case "heavy": ballDef = heavyDef; break;
-                }
-                var c = c.createVisual().moveTo(emitter.position[0], emitter.position[1]);
-                var ballDef;
-                var v = new box2d.BodyDef;
-                v.userData = {name:"cooly", visual:c,hab:hab, id:ids};
-                v.position.Set(emitter.position[0], emitter.position[1]);
-                v.angularDamping = 0;
-                v.id = ids;
-                v.AddShape(ballDef);
-                v = world.CreateBody(v);
-                balls[ids] = {visual:c, physics:v, hab:hab, ids:ids};
-                layer.add(c);
-            }
-        }
+           
             for(var c=world.GetContactList(); c; c = c.GetNext()){
                 var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
                 if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;

@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Fluzzies play</title>
+<link rel="shortcut icon" href="/favicon.png" type="image/png">
 <script src="libs/jquery.js"></script>
 <script src="build.js"> </script>
 <script src="game.js"> </script>
@@ -9,28 +10,24 @@
 </head>
 
 <body onload="CoolGame.start()">
-<object data="levelcompleted.html" style="display:none;position:absolute;width:75%; height:100%; z-index:5; opacity:0.9" id="success"><param name="wmode" value="transparent"></object>
+<div style="display:none;position:absolute;width:75%; height:100%; z-index:5; opacity:0.7" id="success"></div>
 
 <script>
 $(document).ready(function(){$("#success").hide()});
 function win(){
   var currentlevel = parseInt(document.URL.split("?")[1]);
-  $("#success").show().css("margin-left","auto").css("margin-right", "auto").css("left","0").css("right","0");
-  var w = window;
-    var doc = document.getElementById("success").contentDocument;
-
-  doc.defaultView.window.disqus_identifier ='level'+ currentlevel;
-  doc.defaultView.window.disqus_title = 'level'+ currentlevel;
-  doc.defaultView.window.disqus_url = w.location.href;
-  document.getElementById("success").onload = function(){
-
-    if(star1) doc.getElementById("star1").src = "assets/stargot.svg"
-    if(star2) doc.getElementById("star2").src = "assets/stargot.svg"
-    if(star3) doc.getElementById("star3").src = "assets/stargot.svg"
-    doc.getElementById("next").onclick = function(){
-  	w.location.href = "game.html?" + (currentlevel+1)
+  $("#success").show().css("margin-left","auto").css("margin-right", "auto").css("left","0").css("right","0").load("levelcompleted.html", function(){
+    if(star1) document.getElementById("star1").src = "assets/stargot.svg"
+    if(star2) document.getElementById("star2").src = "assets/stargot.svg"
+    if(star3) document.getElementById("star3").src = "assets/stargot.svg"
+    document.getElementById("next").onclick = function(){
+  	window.location.href = "game.html?" + (currentlevel+1)
     }
-  };
+  });
+  disqus_identifier ='level'+ currentlevel;
+  disqus_title = 'level'+ currentlevel;
+  disqus_url = window.location.href;
+  
 }
 
 </script>

@@ -10,7 +10,7 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>Fluzzies</title>
+    <title>Fluzzies homepage</title>
   </head>
 
   <body style="background-image:url(assets/fondo.png);background-attachment:fixed;background-position:center-bottom;background-repeat:no-repeat;background-size:contain">
