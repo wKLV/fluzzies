@@ -89,11 +89,13 @@ var COOLYEMITTER = function(parameters){
                 steps = 0;
                 needsteps = (c.time -2500 *(Math.atan(2*this.i.i-30)+Math.atan(30)))/Step 
 		coolies ++; if(this.i.i<15) this.i.i ++;
-		if(!c.none)	
-			return c;
-        }}
+			return c
+		}
+		else return {end:true};
+        }
+	else return false;
     }
 	this.visual = (new Sprite)
-        .fill("assets/in.svg")
+        .fill("assets/in.png")
 	    .size(150, 150);
 }

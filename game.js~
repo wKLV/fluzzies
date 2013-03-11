@@ -1,14 +1,15 @@
 var speed = 1, star1 = star2 = star3 = false, Step = 5;
 CoolGame.start = function(){
-    var map, ready = false,
+    var map, ready = false, stop = false,
     emitter,
     scene = new Scene(document.body, 1500,1000),
     base, basein, menu = new Node,
     menubackround = new Sprite().size(100,600).fill(250, 245, 225).moveTo(1500-50, 1000/2),
-    powers = [], power = false,
+    powers = [], power = true,
     layer = new Node, spikes = new Node,
     background = new Sprite().size(1500, 1000).
         moveTo(750, 500).fill("assets/fondo1.png"),
+    instructions = new Sprite().size(1500,1000).moveTo(750,500).fill(0,0,0,0),
     labels = new Node,
     nballslabel = new Label("0").moveTo(90,10),
     nballs = 0, ballsSavedlabel = new Label("fluzzies saved").moveTo(160, 10),
@@ -18,26 +19,40 @@ CoolGame.start = function(){
     star1s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(360, 10),
     star2s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(390, 10),
     star3s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
-    checkStars, passed = false, reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
+    checkStars, passed = false, play = new Sprite().fill("assets/pause.svg").size(50,50).moveTo(1360,30).event(["mousedown", "touchstart"], function(e){
+       if(stop) { stop = false; play.fill("assets/pause.svg"); instructions.fill(0,0,0,0);}
+       else { stop = true; play.fill("assets/play.svg");}
+    }), reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
     timeplus = new Sprite().fill("assets/timeplus.svg").size(50,50).moveTo(1420, 30).event(["mousedown", "touchstart"], function(e){
-        emitter.i.i = 25, speed = 4;
+        if(speed <4){
+                    emitter.i.i = 15, speed = 4;
+	            timeplus.fill("assets/timereg.svg");
+	} else {
+		speed = 1; timeplus.fill("assets/timeplus.svg");
+	}
     });
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
-        add(pass).add(star1s).add(star2s).add(star3s).add(resetlabel).add(timeplus);
+        add(pass).add(star1s).add(star2s).add(star3s).add(resetlabel).add(timeplus).add(play);
     scene.add(background);
     menu.add(menubackround);
     scene.add(layer);
     scene.add(spikes);
     scene.add(menu);
     scene.add(labels);
+    scene.add(instructions);
     var params = document.URL.split("?")
     $.getJSON("map"+params[1]+".js", function(data){
+	if(params[1] === "0"){ 
+		instructions.fill("assets/instruction0.png")
+		stop = true;
+		play.fill("assets/play.svg");
+        }
         map = data;
         ready = true;
         emitter = new COOLYEMITTER(data.emitter);
         base = emitter.visual.moveTo(data.emitter.position[0], data.emitter.position[1]),
-        basein = (new Sprite).fill("assets/in.svg").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
+        basein = (new Sprite).fill("assets/in.png").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
         layer.add(base);
         layer.add(basein);
 
@@ -53,13 +68,16 @@ CoolGame.start = function(){
         })
         bain = basein, basein = data.catcher;
         checkStars = function(){
-            if(nballs >= basein.pass.coolies && (ntouches <= basein.pass.touches || typeof basein.pass.touches === "undefined")){
-                passed = true; bain.fill("assets/in-open.svg"); pass.fill("assets/doorgot.svg");
-            }if(nballs >= basein.star1.coolies && (ntouches <= basein.star1.touches || typeof basein.star1.touches === "undefined")){
+            if(!passed && nballs >= basein.pass.coolies && (ntouches <= basein.pass.touches || typeof basein.pass.touches === "undefined")){
+                passed = true; bain.fill("assets/in-open.png"); pass.fill("assets/doorgot.svg"); 
+		if(params[1] === "0"){ 
+			stop= true; play.fill("assets/play.svg"); instructions.fill("assets/instruction1.png");
+		}
+            }if(!star1 && nballs >= basein.star1.coolies && (ntouches <= basein.star1.touches || typeof basein.star1.touches === "undefined")){
                star1s.fill("assets/stargot.svg"); star1 = true;
-            }if(nballs >= basein.star2.coolies && (ntouches <= basein.star2.touches || typeof basein.star2.touches === "undefined")){
+            }if(!star2 && nballs >= basein.star2.coolies && (ntouches <= basein.star2.touches || typeof basein.star2.touches === "undefined")){
                star2s.fill("assets/stargot.svg");star2= true;
-            }if(nballs >= basein.star3.coolies && (ntouches <= basein.star3.touches || typeof basein.star3.touches === "undefined")){
+            }if(!star3 && nballs >= basein.star3.coolies && (ntouches <= basein.star3.touches || typeof basein.star3.touches === "undefined")){
                 star3s.fill("assets/stargot.svg");star3=true; win();
             }
         }
@@ -74,8 +92,9 @@ CoolGame.start = function(){
             nballs = 0, ntouches = powers.length;
             nballslabel.text(""+nballs);
             ntoucheslabel.text(""+ntouches);
-            speed = 1;
-
+	    if(stop === true){
+		stop = false; play.fill("assets/pause.svg"); instructions.fill(0,0,0,0);
+	    }
         });
        function createGround(v, l){
             var position= v.position;
@@ -253,10 +272,8 @@ i
             if(b.GetUserData().name === "spikes")
                 return a;
             else if(b.GetUserData().name === "in"){
-                if(!passed){
-                    b.GetUserData().visual.fill("assets/in-open.svg")
-                    setTimeout(function(){b.GetUserData().visual.fill("assets/in.svg")}, 1500);
-                }
+                    b.GetUserData().visual.fill("assets/in-open.png")
+                    setTimeout(function(){ if(!passed)b.GetUserData().visual.fill("assets/in.png")}, 1500);
 
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2,2);
@@ -277,17 +294,14 @@ i
                     nballslabel.scale(1.5,1.5);
                 }, 1500);
                 checkStars();
-
-                if(!passed){
-                    a.GetUserData().visual.fill("assets/in-open.svg")
-                    setTimeout(function(){a.GetUserData().visual.fill("assets/in.svg")}, 500);
-                }
+                    a.GetUserData().visual.fill("assets/in-open.png")
+                    setTimeout(function(){if(!passed)a.GetUserData().visual.fill("assets/in.png")}, 500);
 
                 return b;
             }
     }
     var step = Step, deleted = {};
-    lime.scheduleManager.schedule(function(dt) {if(ready){
+    lime.scheduleManager.schedule(function(dt) {if(ready && !stop){
         $.each(todelete, function(i,a){
             var v = balls[a.GetUserData().id]
             function reduce(){
@@ -332,9 +346,13 @@ i
             })
             world.Step(step/1000, 8);
  	    var c = emitter.getNext();
-            if(c){
-                emitter.visual.fill("assets/in-open.svg")
-                setTimeout(function(){emitter.visual.fill("assets/in.svg")}, 1500);
+	    if (c.none)
+            else if(c.end){
+		if(params[1]==="0" && !passed){ stop=true; play.fill("assets/play.svg"); instructions.fill("assets/instruction2.png");}
+	    }
+	   else if(c){
+                emitter.visual.fill("assets/in-open.png")
+                setTimeout(function(){emitter.visual.fill("assets/in.png")}, 1500);
                 ids ++;
                 var hab = c.hability;
                 switch(c.hability){
