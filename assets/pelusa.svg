@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="pelusa.svg"
-   inkscape:export-filename="/pjs/limejs-master/bin/CoolGame/assets/pelusaeyesmouth.png"
-   inkscape:export-xdpi="37.915855"
-   inkscape:export-ydpi="37.915855">
+   inkscape:export-filename="/pjs/fluzzies/assets/pelusanoneeyes.png"
+   inkscape:export-xdpi="9.4071712"
+   inkscape:export-ydpi="9.4071712">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -39,7 +39,7 @@
      inkscape:cx="495.02665"
      inkscape:cy="383.60089"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer3"
      showgrid="false"
      inkscape:window-width="1215"
      inkscape:window-height="1000"
@@ -58,7 +58,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

@@ -1,0 +1,88 @@
+.sprite {
+    background: url(download.png) no-repeat;
+    display: block;
+}
+
+.sprite-pelusaheavy {
+    width: 100px;
+    height: 97px;
+    background-position: -6px -6px;
+}
+
+.sprite-pelusaheavyeyes {
+    width: 100px;
+    height: 97px;
+    background-position: -118px -6px;
+}
+
+.sprite-pelusaheavyeyes {
+    width: 100px;
+    height: 97px;
+    background-position: -230px -6px;
+}
+
+.sprite-in-open {
+    width: 396px;
+    height: 406px;
+    background-position: -6px -115px;
+}
+
+.sprite-atra {
+    width: 99px;
+    height: 96px;
+    background-position: -342px -6px;
+}
+
+.sprite-in {
+    width: 396px;
+    height: 406px;
+    background-position: -453px -6px;
+}
+
+.sprite-anti {
+    width: 99px;
+    height: 96px;
+    background-position: -861px -6px;
+}
+
+.sprite-accele {
+    width: 101px;
+    height: 115px;
+    background-position: -972px -6px;
+}
+
+.sprite-pelusaheavyeyesmouth {
+    width: 100px;
+    height: 97px;
+    background-position: -861px -133px;
+}
+
+.sprite-pelusaheavymouth {
+    width: 100px;
+    height: 97px;
+    background-position: -973px -133px;
+}
+
+.sprite-pelusanone {
+    width: 100px;
+    height: 97px;
+    background-position: -861px -242px;
+}
+
+.sprite-pelusanoneeyes {
+    width: 100px;
+    height: 97px;
+    background-position: -973px -242px;
+}
+
+.sprite-pelusanoneeyesmouth {
+    width: 100px;
+    height: 97px;
+    background-position: -861px -351px;
+}
+
+.sprite-pelusanonemouth {
+    width: 100px;
+    height: 97px;
+    background-position: -973px -351px;
+}

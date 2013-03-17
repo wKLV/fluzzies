@@ -9,9 +9,7 @@ var COOLY = function(parameters, time){
         case "heavy": fill = "assets/pelusa-heavy.png"; break;
     }
 	this.createVisual = function(){
-		return (new Sprite)
-        .fill(fill)
-	    .size(60, 60);
+		return new Sprite("pelusanone").size(60, 60);
 	}
 }
 
@@ -40,9 +38,9 @@ var COOLYEMITTER = function(parameters){
         sequence.finished = function(){
             if(sequence.many <=1) return;
             if(sequence.cooly instanceof Array){
-                var seq = sequence.cooly.splice(0,1);               
+                var seq = sequence.cooly.splice(0,1);
 	        sequence.cooly = sequence.cooly.concat(seq);
-                sequence.many --; 
+                sequence.many --;
                 deploy(sequence.cooly, sequence.many, sequence.time, sequence.finished)();
 
             }
@@ -50,7 +48,7 @@ var COOLYEMITTER = function(parameters){
         setTimeout(deploy(sequence.cooly, sequence.many, sequence.time , sequence.finished), sequence.time);
     }
     nextsequence(this.sequence)
-*/ 
+*/
     function iterateSequence(sequence){
         function repeatArray(count, arr){
 		  var ln = arr.length;
@@ -74,20 +72,20 @@ var COOLYEMITTER = function(parameters){
         else{
             var list = iterateSequence(sequence.cooly);
             list.splice(0,0).push({none:true, time:sequence.time});
-	    return repeatArray(sequence.many, list); 
+	    return repeatArray(sequence.many, list);
         }
     }
     this.sequence = iterateSequence(this.sequence);
     var needsteps = this.sequence[0].time;
             needsteps -= 2500 *(Math.atan(2*this.i.i-30)+Math.atan(30))
-	    needsteps /= Step; 
+	    needsteps /= Step;
     this.getNext = function(){
 	steps++;
 	if(steps >= needsteps){
                 var c = this.sequence[coolies];
 		if(c){
                 steps = 0;
-                needsteps = (c.time -2500 *(Math.atan(2*this.i.i-30)+Math.atan(30)))/Step 
+                needsteps = (c.time -2500 *(Math.atan(2*this.i.i-30)+Math.atan(30)))/Step
 		coolies ++; if(this.i.i<15) this.i.i ++;
 			return c
 		}
@@ -95,7 +93,5 @@ var COOLYEMITTER = function(parameters){
         }
 	else return false;
     }
-	this.visual = (new Sprite)
-        .fill("assets/in.png")
-	    .size(150, 150);
+	this.visual = new Sprite("in").size(150, 150);
 }

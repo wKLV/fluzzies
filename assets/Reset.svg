@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="776.3125"
-   height="776.28125"
+   width="50"
+   height="50"
    id="svg3930"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
@@ -24,18 +24,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.175"
-     inkscape:cx="483.52305"
-     inkscape:cy="297.85867"
+     inkscape:zoom="2.8"
+     inkscape:cx="9.3615791"
+     inkscape:cy="44.356581"
      inkscape:document-units="px"
-     inkscape:current-layer="g4469"
+     inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="675"
      inkscape:window-height="604"
-     inkscape:window-x="346"
-     inkscape:window-y="135"
+     inkscape:window-x="226"
+     inkscape:window-y="159"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -57,9 +57,10 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(13.870535,-138.51786)">
+     transform="translate(13.870535,-864.79911)">
     <g
-       id="g4469">
+       id="g4469"
+       transform="matrix(0.06428659,0,0,0.06428659,-13.165076,856.18077)">
       <g
          id="g4492">
         <path
@@ -70,7 +71,7 @@
            sodipodi:cy="589.50507"
            sodipodi:rx="377.14285"
            sodipodi:ry="377.14285"
-           d="M 757.14285,589.50507 C 757.14285,797.79531 588.29025,966.64792 380,966.64792 171.70975,966.64792 2.8571472,797.79531 2.8571472,589.50507 2.8571472,381.21482 171.70975,212.36221 380,212.36221 c 208.29025,0 377.14285,168.85261 377.14285,377.14286 z"
+           d="m 757.14285,589.50507 a 377.14285,377.14285 0 1 1 -754.2857028,0 377.14285,377.14285 0 1 1 754.2857028,0 z"
            transform="translate(-5.7142853,-62.857143)" />
         <path
            style="fill:#ffffff;fill-opacity:1;stroke:none"
@@ -80,7 +81,7 @@
            sodipodi:nodetypes="cssc" />
         <path
            transform="translate(-5.7142853,-62.857143)"
-           style="opacity:0.98999999;fill:#000003;fill-opacity:0.36898415;fill-rule:nonzero;stroke:none"
+           style="opacity:0.98999999;fill:#000003;fill-opacity:0.36898421;fill-rule:nonzero;stroke:none"
            d="M 646.68027,856.18533 C 578.43084,924.43477 484.14512,966.64792 380,966.64792 171.70975,966.64792 2.8571472,797.79531 2.8571472,589.50507 2.8571472,485.35994 45.070298,391.07423 113.31973,322.8248 -15.453203,680.72138 386.40454,992.71656 646.68027,856.18533 z"
            id="path4452"
            inkscape:connector-curvature="0"

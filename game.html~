@@ -5,12 +5,13 @@
 <script src="libs/jquery.js"></script>
 <script src="build.js"> </script>
 <script src="game.js"> </script>
-<script src ="CoolVisual.js"></script>
+<script src ="libs/base.js"></script>
+<script src ="libs/sprite.js"></script>
 <script src="game/cooly.js"></script>
 </head>
 
 <body onload="CoolGame.start()">
-<div style="display:none;position:absolute;width:75%; height:100%; z-index:5; opacity:0.7; overflow-y:scroll" id="success"></div>
+<div style="display:none;position:absolute;width:75%; height:100%; z-index:5; opacity:0.85; overflow-y:scroll" id="success"></div>
 
 <script>
 $(document).ready(function(){$("#success").hide()});

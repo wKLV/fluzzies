@@ -10,12 +10,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="474.34375"
-   height="451.375"
+   width="50"
+   height="50"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="star.svg.svg">
+   sodipodi:docname="stargot.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -49,9 +49,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-113.41071"
-     inkscape:cy="-92.295223"
+     inkscape:zoom="5.6"
+     inkscape:cx="12.030143"
+     inkscape:cy="-9.7940388"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -59,9 +59,9 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1680"
-     inkscape:window-height="1026"
-     inkscape:window-x="1280"
+     inkscape:window-width="1215"
+     inkscape:window-height="1000"
+     inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
@@ -72,7 +72,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -80,20 +80,20 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(14.44643,11.30804)">
+     transform="translate(14.44643,-390.06696)">
     <path
        sodipodi:type="arc"
-       style="opacity:0.56378605000000004;fill:url(#radialGradient3782);fill-opacity:1;stroke:none;stroke-width:25;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.56378605;fill:url(#radialGradient3782);fill-opacity:1;stroke:none"
        id="path3774"
        sodipodi:cx="405.71429"
        sodipodi:cy="382.80356"
        sodipodi:rx="242.85715"
        sodipodi:ry="242.85715"
        d="m 648.57144,382.80356 a 242.85715,242.85715 0 1 1 -485.71429,0 242.85715,242.85715 0 1 1 485.71429,0 z"
-       transform="translate(-174.44643,-159.87947)" />
+       transform="matrix(0.10183825,0,0,0.10183825,-30.852942,376.1722)" />
     <path
        sodipodi:type="star"
-       style="opacity:0.56378605000000004;fill:#fff95e;fill-opacity:1;stroke:#deca12;stroke-width:25;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.56378605;fill:#fff95e;fill-opacity:1;stroke:#deca12;stroke-width:25;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2985"
        sodipodi:sides="5"
        sodipodi:cx="-708.57141"
@@ -106,6 +106,6 @@
        inkscape:rounded="0"
        inkscape:randomized="3.469447e-17"
        d="m -579.82153,252.97068 -90.12285,-78.16333 -159.7408,83.71129 46.48825,-109.86572 -128.97679,-126.054317 118.85417,10.262583 80.02876,-161.617146 26.96766,116.208345 178.43729,26.169429 -102.18724,61.558124 z"
-       transform="translate(931.42857,154.28571)" />
+       transform="matrix(0.10183825,0,0,0.10183825,81.767432,408.16622)" />
   </g>
 </svg>

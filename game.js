@@ -1,60 +1,73 @@
-var speed = 1, star1 = star2 = star3 = false, Step = 5;
-CoolGame.start = function(){
+goog.require('box2d.BodyDef');
+goog.require('box2d.BoxDef');
+goog.require('box2d.CircleDef');
+goog.require('box2d.CircleShape');
+goog.require('box2d.PolyDef');
+goog.require('box2d.Vec2');
+goog.require('box2d.World');
+
+var muu;
+window.onload = function(){
+muu = new muu2d() ,speed = 1, star1 = star2 = star3 = false, Step = 5;
+muu.addAtlas("assets/graphics.png", "assets/graphics.js");
+var staticroot = muu.addCanvas("static", false);
+var dinroot = muu.addCanvas("dinamic", true);
+muu.whenReady(function(){
     var map, ready = false, stop = false,
-    emitter,
-    scene = new Scene(document.body, 1500,1000),
-    base, basein, menu = new Node,
-    menubackround = new Sprite().size(100,600).fill(250, 245, 225).moveTo(1500-50, 1000/2),
-    powers = [], power = true,
-    layer = new Node, spikes = new Node,
-    background = new Sprite().size(1500, 1000).
-        moveTo(750, 500).fill("assets/fondo1.png"),
-    instructions = new Sprite().size(1500,1000).moveTo(750,500).fill(0,0,0,0),
-    labels = new Node,
-    nballslabel = new Label("0").moveTo(90,10),
-    nballs = 0, ballsSavedlabel = new Label("fluzzies saved").moveTo(160, 10),
-    ntouches = 0, ntoucheslabel = new Label("0").moveTo(260,10),
-    tocheslabel = new Label("touches").moveTo(290, 10),
-    pass = new Sprite().size(20,20).fill("assets/door.svg").moveTo(330, 10),
-    star1s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(360, 10),
-    star2s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(390, 10),
-    star3s = new Sprite().size(20,20).fill("assets/star.svg").moveTo(430, 10),
-    checkStars, passed = false, play = new Sprite().fill("assets/pause.svg").size(50,50).moveTo(1360,30).event(["mousedown", "touchstart"], function(e){
-       if(stop) { stop = false; play.fill("assets/pause.svg"); instructions.fill(0,0,0,0);}
-       else { stop = true; play.fill("assets/play.svg");}
-    }), reset, resetlabel = new Sprite().fill("assets/Reset.svg").size(50,50).moveTo(1470,30),
-    timeplus = new Sprite().fill("assets/timeplus.svg").size(50,50).moveTo(1420, 30).event(["mousedown", "touchstart"], function(e){
+    emitter, ground = new Layer,
+    base, basein, menu = new Layer,
+    menubackround = new Rect().size(100,600).fill("rgb(250, 245, 225)").moveTo(1400, 200),
+    powers = [], power = true, pows = new Layer,
+    layer = new Layer, spikes = new Layer,
+   // background = new Rect().size(1500, 1000).
+     //   moveTo(750, 500).fill("assets/fondo1.png"),
+    instructions = $("#instructions"),
+    labels = new Layer,
+    nballslabel = new Label("0").moveTo(90,10).stroke("rgba(0,0,0,0)"),
+    nballs = 0, ballsSavedlabel = new Label("fluzzies saved").moveTo(130, 10).stroke("rgba(0,0,0,0)"),
+    ntouches = 0, ntoucheslabel = new Label("0").moveTo(220,10).stroke("rgba(0,0,0,0)"),
+    tocheslabel = new Label("touches").moveTo(250, 10).stroke("rgba(0,0,0,0)"),
+    pass = new Sprite("door").size(20,20).moveTo(330, 10),
+    star1s = new Sprite("star").size(20,20).moveTo(360, 10),
+    star2s = new Sprite("star").size(20,20).moveTo(390, 10),
+    star3s = new Sprite("star").size(20,20).moveTo(430, 10),
+    checkStars, passed = false,
+    play = new Sprite("pause").size(50,50).moveTo(1360,30),
+    reset, resetlabel = new Sprite("Reset").size(50,50).moveTo(1470,30),
+    timeplus = new Sprite("timeplus").size(50,50).moveTo(1420, 30)
+    play.event(["mousedown"], function(e){
+       if(stop) { stop = false; play.change("pause"); instructions.hide(); }
+       else { stop = true; play.change("play");}
+    })
+    timeplus.event(["mousedown"], function(e){
         if(speed <4){
-                    emitter.i.i = 15, speed = 4;
-	            timeplus.fill("assets/timereg.svg");
-	} else {
-		speed = 1; timeplus.fill("assets/timeplus.svg");
-	}
+            emitter.i.i = 15, speed = 4;
+            timeplus.change("timereg");
+        } else {
+        speed = 1; timeplus.change("timeplus");
+        }
     });
+
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
         add(pass).add(star1s).add(star2s).add(star3s).add(resetlabel).add(timeplus).add(play);
-    scene.add(background);
+   // scene.add(background);
     menu.add(menubackround);
-    scene.add(layer);
-    scene.add(spikes);
-    scene.add(menu);
-    scene.add(labels);
-    scene.add(instructions);
+    staticroot.add(menu).add(ground).add(labels);
+    dinroot.add(spikes).add(layer).add(pows);
     var params = document.URL.split("?")
     $.getJSON("map"+params[1]+".js", function(data){
-	if(params[1] === "0"){ 
-		instructions.fill("assets/instruction0.png")
-		stop = true;
-		play.fill("assets/play.svg");
+        if(params[1] === "0"){
+            instructions.show().css("background-image", "url(assets/instruction0.png)");
+            stop = true;
+            play.change("play");
         }
         map = data;
         ready = true;
         emitter = new COOLYEMITTER(data.emitter);
         base = emitter.visual.moveTo(data.emitter.position[0], data.emitter.position[1]),
-        basein = (new Sprite).fill("assets/in.png").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
-        layer.add(base);
-        layer.add(basein);
+        basein = new Sprite("in").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
+        layer.add(base).add(basein);
 
         var binbodydef = new box2d.BodyDef;
         binbodydef.position.Set(data.catcher.position[0], data.catcher.position[1])
@@ -63,27 +76,27 @@ CoolGame.start = function(){
         var binbody = world.CreateBody(binbodydef);
         binbodydef.userData = {name:"in", visual:basein}
 
-        basein.event(["mousedown", "touchstart"], function(e){
+        basein.event(["mousedown"], function(e){
             if(passed) win();
         })
-        bain = basein, basein = data.catcher;
+        bain = basein, basin = data.catcher;
         checkStars = function(){
-            if(!passed && nballs >= basein.pass.coolies && (ntouches <= basein.pass.touches || typeof basein.pass.touches === "undefined")){
-                passed = true; bain.fill("assets/in-open.png"); pass.fill("assets/doorgot.svg"); 
-		if(params[1] === "0"){ 
-			stop= true; play.fill("assets/play.svg"); instructions.fill("assets/instruction1.png");
-		}
-            }if(!star1 && nballs >= basein.star1.coolies && (ntouches <= basein.star1.touches || typeof basein.star1.touches === "undefined")){
-               star1s.fill("assets/stargot.svg"); star1 = true;
-            }if(!star2 && nballs >= basein.star2.coolies && (ntouches <= basein.star2.touches || typeof basein.star2.touches === "undefined")){
-               star2s.fill("assets/stargot.svg");star2= true;
-            }if(!star3 && nballs >= basein.star3.coolies && (ntouches <= basein.star3.touches || typeof basein.star3.touches === "undefined")){
-                star3s.fill("assets/stargot.svg");star3=true; win();
+            if(!passed && nballs >= basin.pass.coolies && (ntouches <= basin.pass.touches || typeof basin.pass.touches === "undefined")){
+                passed = true; basein.change("in-open"); pass.change("doorgot");
+                if(params[1] === "0"){
+                    stop= true; play.change("play"); instructions.css("background-image", "url(assets/instruction1.png)").show();
+                }
+            }if(!star1 && nballs >= basin.star1.coolies && (ntouches <= basin.star1.touches || typeof basin.star1.touches === "undefined")){
+               star1s.change("stargot"); star1 = true;
+            }if(!star2 && nballs >= basin.star2.coolies && (ntouches <= basin.star2.touches || typeof basin.star2.touches === "undefined")){
+               star2s.change("stargot");star2= true;
+            }if(!star3 && nballs >= basin.star3.coolies && (ntouches <= basin.star3.touches || typeof basin.star3.touches === "undefined")){
+                star3s.change("stargot");star3=true; win();
             }
         }
-        resetlabel.event(["mousedown", "touchstart"],function(){
+        resetlabel.event(["mousedown"],function(){
             $.each(balls, function(i,v){
-                todelete[v.ids] = (v.physics);
+                todelete[v.ids] = v.physics;
             });
             emitter = new COOLYEMITTER(data.emitter);
             layer.rem(base);
@@ -92,14 +105,14 @@ CoolGame.start = function(){
             nballs = 0, ntouches = powers.length;
             nballslabel.text(""+nballs);
             ntoucheslabel.text(""+ntouches);
-	    if(stop === true){
-		stop = false; play.fill("assets/pause.svg"); instructions.fill(0,0,0,0);
-	    }
+            if(stop === true){
+                stop = false; play.change("pause"); instructions.hide();
+            }
         });
        function createGround(v, l){
             var position= v.position;
            position = new box2d.Vec2(position.x, position.y)
-            ground = new box2d.PolyDef;
+            var ground = new box2d.PolyDef;
             ground.restitution = .6
             ground.density = 0;
             ground.friction = 1;
@@ -109,136 +122,150 @@ CoolGame.start = function(){
             gbody.AddShape(ground);
             gbody.userData = {name:"ground"}
             world.CreateBody(gbody);
-
        }
-        $.each(data.grounds, function(i,v){
-            if(v.shape){
-                var shape = v.shape, position= v.position, l = [];
-                $.each(shape, function(i,v){
-                    l.push([shape[i].x, shape[i].y])
-                    shape[i] = new goog.math.Coordinate(shape[i].x, shape[i].y)
-                });
-
-                createGround(v, l);
-                var shape = v.shape, position= v.position, l = [];
-                var vis = new Polygon(shape).fill("assets/Metal.png").stroke(3, 'rgb(0,0,0)').moveTo(position.x, position.y);
-                layer.add(vis);
-            }
-            else if(v.megashape){
-                $.each(v.megashape, function(i,v){
+        var img = new Image();
+        img.onload = function(){
+            var texture = staticroot.context.createPattern(img, "repeat")
+            $.each(data.grounds, function(i,v){
+                if(v.shape){
                     var shape = v.shape, position= v.position, l = [];
                     $.each(shape, function(i,v){
                         l.push([shape[i].x, shape[i].y])
-                        shape[i] = new goog.math.Coordinate(shape[i].x, shape[i].y)
-                     });
+                        shape[i] = new v2(shape[i].x, shape[i].y)
+                    });
 
-                     if(v.visual){
-                        var vis = new Polygon(v.shape).fill("assets/Metal.png").stroke(3, 'rgb(0,0,0)').
+                    createGround(v, l);
+                    var shape = v.shape, position= v.position, l = [];
+                    var vis = new Polygon(shape).fill(texture).stroke(3, 'rgb(0,0,0)').moveTo(position.x, position.y);
+                    ground.add(vis);
+                }
+                else if(v.megashape){
+                    $.each(v.megashape, function(i,v){
+                        var shape = v.shape, position= v.position, l = [];
+                        $.each(shape, function(i,v){
+                            l.push([shape[i].x, shape[i].y])
+                            shape[i] = new v2(shape[i].x, shape[i].y)
+                         });
+
+                         if(v.visual){
+                            var vis = new Polygon(v.shape).fill(texture).stroke(3, 'rgb(0,0,0)').
                             moveTo(position.x, position.y);
-                        layer.add(vis);
-                    }
-                    else if(v.shape)
-                        createGround(v, l);
-                });
-            }
-        });
-    $.each(data.spikes, function(i,v){
-        var sprite = new Sprite().size(260, 100).fill("assets/Pinchos2.svg").moveTo(v.position.x, v.position.y);
-
-        var spiks = new box2d.PolyDef;
-        spiks.restitution = .6
-        spiks.density = 0;
-        spiks.friction = 1;
-        spiks.SetVertices([[-130,50],[-130,-50],[130,-50],[130,50]]);
-
-        var sbodyDef = new box2d.BodyDef;
-        sbodyDef.position.Set(v.position.x, v.position.y);
-        sbodyDef.AddShape(spiks);
-
-        sbodyDef.userData = {name:"spikes"};
-i
-        var spikes_body = world.CreateBody(sbodyDef);
-
-        spikes.add(sprite);
-    });
-        $.each(data.powers, function(i,v){
-            var s = (new Sprite).size(75,75).fill("assets/"+v+".svg").
-                moveTo(1500-50, 1000/2+95*i-235);
-            menu.add(s);
-            var layer = new Node;
-            if(v === "anti"){
-                var antisprite = new Sprite().size(100,100).fill("assets/anti.svg"),
-                antifield = new Circle().size(300,300).fill(107, 67, 151, 0.1),
-                antifield2 = new Circle().size(300,300).fill(107,67,151, 0.1).scale(0.5,0.5);
-                layer.add(antifield).add(antifield2).add(antisprite);
-            }
-	    else if(v==="atra"){
-                var antisprite = new Sprite().size(100,100).fill("assets/atra.svg");
-                antifield = new Circle().size(300,300).fill(107, 67, 151, 0.1),
-                antifield2 = new Circle().size(300,300).fill(107,67,151, 0.1).scale(0.5,0.5);
-                layer.add(antifield).add(antifield2).add(antisprite);
-            }
-        else if(v=="accele"){
-            var rotateSprite = new Sprite().size(100,100).fill("assets/accele.svg");
-            var rotateField = new Circle().size(330,270).fill(10,250,20, 0.2);
-            layer.add(rotateField).add(rotateSprite);
+                            ground.add(vis);
+                        }
+                        else if(v.shape)
+                            createGround(v, l);
+                    });
+                }
+                  });
+            staticroot.render();
         }
-        layer.event(["mousedown", "touchstart"], function(e){
-            e.startDrag();
-            ntouches ++;
-            ntoucheslabel.text(""+ntouches).scale(2,2);
-            setTimeout(function(){
-                ntoucheslabel.scale(1.5,1.5);
-            }, 3000);
+        img.src = "assets/Metal.png"
+        $.each(data.spikes, function(i,v){
+            var sprite = new Sprite("Pinchos2").size(260, 100).moveTo(v.position.x, v.position.y);
 
+            var spiks = new box2d.PolyDef;
+            spiks.restitution = .6
+            spiks.density = 0;
+            spiks.friction = 1;
+            spiks.SetVertices([[-130,50],[-130,-50],[130,-50],[130,50]]);
+
+            var sbodyDef = new box2d.BodyDef;
+            sbodyDef.position.Set(v.position.x, v.position.y);
+            sbodyDef.AddShape(spiks);
+
+            sbodyDef.userData = {name:"spikes"};
+
+            var spikes_body = world.CreateBody(sbodyDef);
+
+            spikes.add(sprite);
         });
-        s.event(["mousedown", "touchstart"], function(e){
-            power = {visual:layer, power:v};
-            scene.add(layer);
-            layer.moveTo(s.getPos().x+e.position.x, s.getPos().y+e.position.y);
-            powers.push({power:v, visual:layer, updateEffects:function(dt){
+        $.each(data.powers, function(i,v){
+            var s = new Sprite(v).size(75,75).
+                moveTo(1500-50, 250+95*i);
+            menu.add(s);
+            var layer = new Layer;
             if(v === "anti"){
-                var r = antisprite.rotation();
-                antisprite.rotation(r+dt/10)
-                var r = antifield.scale().x;
-
-                var r = antifield.scale().x;
-                r += dt/800;
-                r %= 1;
-                antifield.scale(r,r);
-                antifield.fill(243, 222, 83, 1-r)
-                var p = antifield2.scale().x;
-                p += dt/800;
-                p %= 1;
-                antifield2.scale(p,p);
-                antifield2.fill(243, 222, 83, 1-p)
+                var antisprite = s,
+                antifield = new Circle().radius(150).fill("rgba(243, 222, 83, 0.1)").stroke("rgba(0,0,0,0)"),
+                antifield2 = new Circle().radius(150).fill("rgba(243, 222, 83, 0.1)").stroke("rgba(0,0,0,0)").scale(0.5,0.5);
+                layer.add(antifield).add(antifield2)
             }
-            else if(v ==="atra"){
-                var r = antisprite.rotation();
-                antisprite.rotation(r-dt/10)
-                    var r = antifield.scale().x;
+            else if(v==="atra"){
+                var antisprite = s;
+                antifield = new Circle().radius(150).fill("rgba(107, 67, 151, 0.1)").stroke("rgba(0,0,0,0)"),
+                antifield2 = new Circle().radius(150).fill("rgba(107,67,151, 0.1)").stroke("rgba(0,0,0,0)").scale(0.5,0.5);
+                layer.add(antifield).add(antifield2)
+            }
+            else if(v=="accele"){
+                var rotateSprite = s;
+                var rotateField = new Circle().radius(300).fill("rgba(10,250,20, 0.2)");
+                layer.add(rotateField);
+            }
+            layer.event(["mousedown"], function(e){
+                layer.follow(muu.getMouse());
+                ntouches ++;
+                ntoucheslabel.text(""+ntouches).scale(2,2); staticroot.render();
+                setTimeout(function(){
+                    ntoucheslabel.scale(1.5,1.5); staticroot.render();
+                }, 3000);
+
+            }, s.region());
+            s.event(["mousedown"], function(e){
+                menu.rem(s);
+                staticroot.render();
+                s.size(100,100).moveTo(0,0);
+                layer.add(s);
+                power = {visual:layer, power:v};
+                pows.add(layer);
+                layer.follow(muu.getMouse());
+                powers.push({power:v, visual:layer, updateEffects:function(dt){
+                if(v === "anti"){
+                    var r = antisprite.rotation();
+                    antisprite.rotation(r-dt/480)
+                    r = antifield.scale();
+                    r += dt/800;
+                    r %= 1;
+                    if(r===0) r= 0.0001
+                    antifield.scale(r);
+                    var p = antifield2.scale();
+                    p += dt/80;
+                    p %= 1;
+                    if(p===0) p=0.0001
+                    antifield2.scale(p);
+                }
+                else if(v ==="atra"){
+                    var r = antisprite.rotation();
+                    antisprite.rotation(r-dt/480)
+                    r = antifield.scale();
                     r = -r +1
-                r += dt/800;
+                    r += dt/800;
                     r %= 1;
                     antifield.scale(1-r,1-r);
-                    antifield.fill(107, 67, 151, r)
-                    var p = antifield2.scale().x;
-                p = -p +1
+                    var p = antifield2.scale();
+                    p = -p +1
                     p += dt/800;
                     p %= 1;
                     antifield2.scale(1-p,1-p);
-                    antifield2.fill(107, 67, 151, p)
-            }
-            else if(v==="accele"){
-                var r = rotateSprite.rotation();
-                var p = rotateField.rotation();
-                rotateSprite.rotation(r-dt)
-                rotateField.rotation(r-dt/10);
-            }
-                }});
-                menu.rem(s);
-            })
+                }
+                else if(v==="accele"){
+                    rotateSprite.size(100,100)
+                    var r = rotateSprite.rotation();
+                    var p = rotateField.rotation();
+                    rotateSprite.rotation(r-dt)
+                    rotateField.rotation(r-dt/10);
+                }
+             }});
+             s.clearEvent("mousedown");
+             s.event(["mousedown"], function(e){
+                layer.follow(muu.getMouse());
+             });
+                s.event(["mouseup"], function(){layer.unfollow()});
+
+        })
+
         });
+        muu.renderAll();
+        requestAnimationFrame(render);
     })
 
     var gravity = new box2d.Vec2(0, 100);
@@ -265,21 +292,21 @@ i
     bin.density = 0;
     bin.SetVertices([[-75,75],[-75,-75],[75,-75],[75,75]])
 
-    scene.substitute(scene.scene);
     var listener = {}, todelete = {}, ntodelete = {};
     listener.PreSolve = function(a,b){
         if(a.GetUserData().name === "cooly" && ! deleted[a.GetUserData().id]){
             if(b.GetUserData().name === "spikes")
                 return a;
             else if(b.GetUserData().name === "in"){
-                    b.GetUserData().visual.fill("assets/in-open.png")
-                    setTimeout(function(){ if(!passed)b.GetUserData().visual.fill("assets/in.png")}, 1500);
+                    b.GetUserData().visual.change("in-open")
+                    setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in")}, 1500);
 
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2,2);
                 setTimeout(function(){
-                    nballslabel.scale(1.5,1.5);
+                    nballslabel.scale(1.5,1.5); staticroot.render();
                 }, 1500);
+                staticroot.render();
                 checkStars();
                 return a;
             }
@@ -291,39 +318,42 @@ i
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2,2);
                 setTimeout(function(){
-                    nballslabel.scale(1.5,1.5);
+                    nballslabel.scale(1.5,1.5);staticroot.render();
                 }, 1500);
+                staticroot.render();
                 checkStars();
-                    a.GetUserData().visual.fill("assets/in-open.png")
-                    setTimeout(function(){if(!passed)a.GetUserData().visual.fill("assets/in.png")}, 500);
+                    a.GetUserData().visual.change("in-open")
+                    setTimeout(function(){if(!passed)a.GetUserData().visual.change("in")}, 500);
 
                 return b;
             }
     }
     var step = Step, deleted = {};
-    lime.scheduleManager.schedule(function(dt) {if(ready && !stop){
-        $.each(todelete, function(i,a){
-            var v = balls[a.GetUserData().id]
-            function reduce(){
-                var s = v.visual.scale().x;
-                var r = v.visual.rotation()
-                v.visual.rotation(r+ dt/s)
-                v.visual.scale(s-0.1, s-0.1)
-                if(s > 0.1) setTimeout(reduce, 50);
-                else {layer.rem(v.visual);
-                    delete balls[v.ids];
-                }
-            }
-            world.DestroyBody(a);
-            reduce();
-            //layer.rem(a.GetUserData().visual);
-        });
-        todelete = {};
+    function render(dt) {
+    if(ready && !stop){
+        dt /= 500;
         var steps = Math.floor(dt / Step * speed)
         for(var i=0; i< steps; i++){
+            $.each(todelete, function(i,a){
+                var v = balls[a.GetUserData().id]
+                function reduce(){
+                    var s = v.visual.scale().x;
+                    var r = v.visual.rotation()
+                    v.visual.rotation(r+ dt/s)
+                    v.visual.scale(s-0.1, s-0.1)
+                    if(s > 0.1) setTimeout(reduce, 50);
+                    else {layer.rem(v.visual);
+                        delete balls[v.ids];
+                    }
+                }
+                world.DestroyBody(a);
+                reduce();
+                //layer.rem(a.GetUserData().visual);
+            });
+            todelete = {};
+
             $.each(powers, function(i,p){
                 $.each(balls, function(i,v){
-
                     var d = v.physics.GetCenterPosition().Copy().subtract(p.visual.getPos());
                     var dlength = d.Normalize()
                     if(dlength<5)
@@ -342,17 +372,20 @@ i
                     else if(p.power === "accele" && dlength <150)
                         v.physics.ApplyTorque(2000000*step)
             });
-                p.updateEffects(step);
+                p.updateEffects(step/2);
             })
             world.Step(step/1000, 8);
  	    var c = emitter.getNext();
 	    if (c.none){}
             else if(c.end){
-		if(params[1]==="0" && !passed){ stop=true; play.fill("assets/play.svg"); instructions.fill("assets/instruction2.png");}
+		        if(params[1]==="0" && !passed){
+                    stop=true; play.change("play");
+                    instructions.css("background-image", "url(assets/instruction2.png)").show();
+                }
 	    }
 	   else if(c){
-                emitter.visual.fill("assets/in-open.png")
-                setTimeout(function(){emitter.visual.fill("assets/in.png")}, 1500);
+                emitter.visual.change("in-open")
+                setTimeout(function(){emitter.visual.change("in")}, 1500);
                 ids ++;
                 var hab = c.hability;
                 switch(c.hability){
@@ -375,29 +408,28 @@ i
             $.each(balls, function(i,v){
                 if(Math.abs(v.physics.GetAngularVelocity())>10)
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
-                        v.visual.fill("assets/pelusa"+v.hab+"eyesmouth.png")
+                        v.visual.change("pelusa"+v.hab+"eyesmouth")
                     else
-                        if(v.visual.fill() === "assets/pelusa"+v.hab+"eyesmouth.png" || v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png")
-                            setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+"eyes.png");},1000);
+                        if(v.visual.sprite() === "pelusa"+v.hab+"eyesmouth" || v.visual.sprite() === "pelusa"+v.hab+"mouth")
+                            setTimeout(function(){v.visual.change("pelusa"+v.hab+"eyes");},1000);
                         else
-                            v.visual.fill("assets/pelusa"+v.hab+"eyes.png")
+                            v.visual.change("pelusa"+v.hab+"eyes")
                 else
                     if(Math.abs(v.physics.GetLinearVelocity().magnitude()) > 100 && v.physics.GetContactList())
-                        v.visual.fill("assets/pelusa"+v.hab+"mouth.png")
+                        v.visual.change("pelusa"+v.hab+"mouth")
                     else
-                        if(v.visual.fill() === "assets/pelusa"+v.hab+"mouth.png" || v.visual.fill() == "assets/pelusa"+v.hab+"yesmouth.png")
-                            setTimeout(function(){v.visual.fill("assets/pelusa"+v.hab+".png");},1000);
+                        if(v.visual.sprite() === "pelusa"+v.hab+"mouth" || v.visual.sprite() == "pelusa"+v.hab+"yesmouth")
+                            setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
                         else
-                            v.visual.fill("assets/pelusa"+v.hab+".png")
+                            v.visual.change("pelusa"+v.hab)
 
 
                 var pos = v.physics.GetCenterPosition().clone();
                 var rot = v.physics.GetRotation();
 
-                v.visual.rotation(-rot/Math.PI*180);
+                v.visual.rotation(rot);
                 v.visual.moveTo(pos.x, pos.y);
             });
-           
             for(var c=world.GetContactList(); c; c = c.GetNext()){
                 var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
                 if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
@@ -405,9 +437,11 @@ i
               //  todelete;
               //  ntodelete = {};
         }
-     },this);
+        muu.render();
+        requestAnimationFrame(render);
+     }
 
-     background.event(["mousedown", "touchstart"], function(e){
+     //background.event(rRect(["mousedown", "touchstart"], function(e){
        /* if(power){
             power.visual.moveTo(e.position.x, e.position.y);
             ntouches ++;
@@ -417,12 +451,13 @@ i
             }, 3000);
 
         }*/
-       console.log(e.screenPosition)
-    });
+      // console.log(e.screenPosition)
+    //});
+});
 }
-goog.exportSymbol('CoolGame.start', CoolGame.start);
+//goog.exportSymbol('CoolGame.start', CoolGame.start);
 
-$(document).ready(function(){
+//$(document).ready(function(){
  /*   var renderer = new THREE.WebGLRenderer({antialias:true});
     var body = document.body, html = document.documentElement;
     renderer.setSize( document.body.clientWidth, Math.max( body.scrollHeight, body.offsetHeight,
@@ -467,5 +502,5 @@ $(document).ready(function(){
     requestAnimationFrame(render);
 */
 
-});
+//});
 
