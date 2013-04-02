@@ -16,7 +16,7 @@ function _muucheckEvent(type){ return function(ev){
 	}
 }}
 // The main object that handles the canvas on screen and resources
-var muu = function muu2d(){
+var muu = new function (){
 	var atlass = {}; // The atlas loades
 	var sprites = {}; // The sprites processed
 	var ready = 0; // How many files to load to begin
@@ -258,6 +258,7 @@ muuNode.prototype.unfollow = function(){
 }
 
 function Layer (){
+    muuNode.call(this)
 	this.objects = [];
 }
 
@@ -265,6 +266,7 @@ Layer.prototype = new muuNode();
 Layer.prototype.constructor = Layer;
 
 Layer.prototype.add = function(nod){
+    muuNode()
 	nod.parent = this;
 	this.objects.push(nod);
 	return this;

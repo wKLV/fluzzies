@@ -1,8 +1,9 @@
 // A cooly is the name for what will be the fluzzies. This prototype
 // should save also the physics, it's in the TODO list
-var COOLY = function(parameters){
+var COOLY = function(parameters, time){
     if(typeof parameters === "undefined") parameters = {hability:"none"}
     this.hability = parameters.hability;
+    this.time = time;
     var fill = "pelusanone.png";
     switch (this.hability){
         case "none": fill = "pelusanone"; break;

@@ -17,7 +17,7 @@ var   b2Vec2 = Box2D.Common.Math.b2Vec2
             ;
 
 window.onload = function(){
-var speed = 1, Step = 10; //Speed changes how many steps are processed in real time. Step is the length of each Step
+speed = 1, Step = 10; //Speed changes how many steps are processed in real time. Step is the length of each Step
 var star1 = star2 = star3 = false // We start without stars :(
 // Add stuff
 muu.addAtlas("assets/graphics.png", "assets/graphics.js");
@@ -68,7 +68,7 @@ muu.whenReady(function(){
     dinroot.add(spikes).add(layer).add(pows);
 
     // Box2D stuff
-    var world = new b2World(new b2Vec2(0, 50), false);
+    var world = new b2World(new b2Vec2(0, 10), false);
 
     var normalDef = new b2FixtureDef;
     normalDef.density = 0.5;
@@ -340,12 +340,12 @@ muu.whenReady(function(){
         });
 
             muu.render()
-            world.Step(1/70, 8)
+            world.Step(1/60, 8)
             requestAnimationFrame(renderSuccess);
         }
         for(var i =0; i< 100; i++){
                 ids ++;
-            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var pos = new v2(Math.random()*1400, Math.random()*500+400)
             var c = new COOLY({hability:"heavy"}).createVisual().moveTo(pos.x, pos.y);
                 var v = new b2BodyDef;
                 v.type = b2Body.b2_staticBody;
@@ -361,7 +361,7 @@ muu.whenReady(function(){
         }
         for(var i=0; i<30; i++){
                 ids ++;
-            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var pos = new v2(Math.random()*1400, Math.random()*500)
             var c = new COOLY().createVisual().moveTo(pos.x, pos.y);
                 var v = new b2BodyDef;
                 v.type = b2Body.b2_dynamicBody;
@@ -377,7 +377,7 @@ muu.whenReady(function(){
         }
         for(var i=0; i<10; i++){
             ids++;
-            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var pos = new v2(Math.random()*1400, Math.random()*500)
             var c = new COOLY({hability:"heavy"}).createVisual().moveTo(pos.x, pos.y);
                 var v = new b2BodyDef;
                 v.type = b2Body.b2_dynamicBody;
@@ -391,9 +391,9 @@ muu.whenReady(function(){
                 balls[ids] = {visual:c, physics:v, ids:ids, hab:"heavy"};
                 layer.add(c);
         }
-        pows.add(new Label("CONGRATULATIONS").moveTo(600, 400).scale(3));
-        pows.add(new Label("this is only a basic version of what this game will become").moveTo(470, 430).scale(2.5));
-        pows.add(new Label("if you liked it stay tuned for more!").moveTo(570, 460).scale(2.75));
+        pows.add(new Label("CONGRATULATIONS").moveTo(600, 200).scale(3));
+        pows.add(new Label("this is only a basic version of what this game will become").moveTo(470, 230).scale(2.5));
+        pows.add(new Label("if you liked it stay tuned for more!").moveTo(570, 260).scale(2.75));
         requestAnimationFrame(renderSuccess);
     }
 
