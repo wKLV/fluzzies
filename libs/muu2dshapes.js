@@ -1,3 +1,5 @@
+// Basic simple shapes. All fillable
+
 function Rect(x, y){
 	this._size = new v2(x ||50,y || 50);
 }
@@ -11,6 +13,7 @@ Rect.prototype.size = function(x,y){
 	return this;
 }
 
+// TODO fix region to check the position at the time it is asked as in sprite
 Rect.prototype.region = function(){
 	if (arguments.length) console.log("you can't overwrite the region of a rectangle");
 	return new rRect(function(){return v2.add(this.position, v2.scalar(this._size, -0.5))}, function(){return this._size});
@@ -42,6 +45,7 @@ Circle.prototype.radius = function(r){
     return this;
 }
 
+// TODO fix as Rect
 Circle.region = function(){
 	if (arguments.length) console.log("you can't overwrite the region of a circle");
 	return new rCirc(this.position, this.r);
@@ -51,8 +55,8 @@ Circle.prototype.paintTo = function(context){
 	context.translate(this.getPos().x, this.getPos().y);
 	context.rotate(this.rotation());
 	context.scale(this.scale(), this.scale());
-  context.beginPath()
-  context.arc(0, 0, this.r, 0, 1/0.5*Math.PI, false);
+    context.beginPath()
+    context.arc(0, 0, this.r, 0, 1/0.5*Math.PI, false);
 	context.fillStyle = this.fill();
 	context.fill();
 	context.lineWidth = this.width;

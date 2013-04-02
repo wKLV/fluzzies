@@ -1,53 +1,62 @@
+// List of callbacks when event happen
 var muuEVENTS = {
 	"mousemove":[],
 	"mousedown":[],
 	"mouseup":[]
 };
 
-function _muucheckEvent(type, canvas){ return function(ev){
+// This is the function that will be called when
+function _muucheckEvent(type){ return function(ev){
 	for(var i in muuEVENTS[type]){
 		var e = muuEVENTS[type][i]
-		if(e.region.checkIn(ev.offsetX, ev.offsetY))
-			e.callback(ev, e.object);
+		if(e.region.checkIn((ev.clientX ? ev.clientX : ev.layerX)*resize, (ev.clientY ? ev.clientY : ev.layerY)*resize)){
+		    ev.preventDefault();
+            e.callback(ev, e.object);
+        }
 	}
 }}
+// The main object that handles the canvas on screen and resources
+var muu = function muu2d(){
+	var atlass = {}; // The atlas loades
+	var sprites = {}; // The sprites processed
+	var ready = 0; // How many files to load to begin
+	var readycallbacks = []; // When ready hits 0 what to call
 
-function muu2d(){
-	var callback = function(){};
-	var atlass = {};
-	var sprites = {};
-	var ready = 0;
-	var readycallbacks = [];
-
-	var canvas = [];
-	var mouse = new muuNode;
+	var canvas = []; // The list of canvas to draw on
+	var mouse = new muuNode; // The mouse as a node to track its position
+    // canv: the id of the canvas. dinamic: wheter it should be called each time we say render or renderAll
 	this.addCanvas = function(canv, dinamic){
 			var canv;
 			if(typeof canv === "string")
 				canv = document.getElementById(canv);
-			else { console.log("not a canvas id"); return false;} ;
-			canv.onmousemove = function(ev){
-				mouse.moveTo(ev.offsetX, ev.offsetY);
-				 _muucheckEvent("mousemove", canv)(ev)
+			else { throw "not a canvas id"; return false;} ;
+			// add listeners to each canvas
+            canv.onmousemove = function(ev){
+                // Move the mouse to its position every time we get it
+                mouse.moveTo((ev.clientX ? ev.clientX : ev.layerX)*resize, (ev.clientY ? ev.clientY : ev.layerY)*resize);
+				 _muucheckEvent("mousemove")(ev)
 			};
-			canv.onmousedown = _muucheckEvent("mousedown", canv);
-			canv.onmouseup = _muucheckEvent("mouseup", canv);
-			var root = new Layer;
-			root.render = function(){
-				canv.getContext("2d").clearRect(0,0,canv.width, canv.height);
-				root.paintTo(canv.getContext("2d"))
+			canv.onmousedown = _muucheckEvent("mousedown");
+			canv.onmouseup = _muucheckEvent("mouseup");
+
+			var root = new Layer; //The root layer of all the canvas
+			root.render = function(){ //render this canvas
+				canv.getContext("2d").clearRect(0,0,canv.width, canv.height); //First we clean the previous state
+				root.paintTo(canv.getContext("2d")) //Now we paint using layer function
 			};
             root.context = canv.getContext("2d");
             root.dinamic = dinamic;
 			canvas.push({root: root, canvas:canv, dinamic:dinamic});
 			return root;
 	};
+    // A normal render that will only render dynamic canvas
 	this.render = function(){
 		for(var i in canvas) if(canvas[i].dinamic){
 			var root = canvas[i].root;
 			root.render();
 		}
 	};
+    // A render for all the canvas
 	this.renderAll = function(){
 		for(var i in canvas){
 			var root = canvas[i].root;
@@ -55,7 +64,8 @@ function muu2d(){
 		}
 	};
 	this.getMouse = function(){ return mouse};
-	this.addAtlas = function(graphics, data){
+	// An atlas in muu2d consists of two files, a image and a json to process it
+    this.addAtlas = function(graphics, data){
 		ready ++;
 		var request = new XMLHttpRequest();
 		request.open("GET", data, true);
@@ -70,15 +80,14 @@ function muu2d(){
 			dat = JSON.parse(this.responseText);
 			atlass[data] = {image:null, sprites:{}}
 			function createSprite(name){
-				var sprite = {origin:data, position:dat[name].position, size:dat[name].size, ssize:dat[name].size, name:name};
-				sprite.paintTo = function(context){
-					context.drawImage(atlass[data].image, sprite.position.x, sprite.position.y, sprite.size.x, sprite.size.y, 0, 0, sprite.ssize.x, sprite.ssize.y);
+				var sprite = {origin:data, position:dat[name].position, size:dat[name].size, name:name}; // A simple sprite object
+                sprite.paintTo = function(context, size){
+					context.drawImage(atlass[data].image, sprite.position.x, sprite.position.y, sprite.size.x, sprite.size.y, 0, 0, size.x, size.y);
 				}
 				sprites[i] = sprite;
 			}
 			for(var i in dat) createSprite(i);
-			ready --;
-			if(ready === 0) for(var i in readycallbacks) readycallbacks[i]();
+			ready --; if(ready === 0) for(var i in readycallbacks) readycallbacks[i]();
 		}
 		request.send();
 	}
@@ -88,8 +97,9 @@ function muu2d(){
 	this.whenReady = function(callback){
 		readycallbacks.push(callback);
 	}
-}
+}()
 
+// Basic vector library
 function v2 (x,y){
 	this.x = x || 0, this.y = y || 0;
 }
@@ -99,7 +109,7 @@ v2.add = function(x,y){
 		if(x instanceof v2){
 			if(typeof this.x === "undefined" && y instanceof v2)
 				tx = x.x +y.x, ty = x.y+ y.y;
-			else tx += x.x,	ty += x.y;
+			else tx += x.x, ty += x.y;
 		}
 		else {
 			tx += x;
@@ -113,7 +123,7 @@ v2.add = function(x,y){
 v2.prototype.add =  v2.add
 
 v2.minus = function(v){
-	if(this.x === "undefined")
+	if(typeof this.x !== "undefined")
 		this.x = - this.x, this.y = -this.y
 	else
 		return new v2(-v.x, -v.y)
@@ -153,6 +163,7 @@ v2.prototype.norm = function(){
 		return new v2(this.x/l, this.y/l);
 }
 
+// Regions
 rRect = function(pos, size){
 	this.pos = pos, this.size = size;
 }
@@ -241,12 +252,12 @@ muuNode.prototype.follow = function(node, v){
 }
 
 muuNode.prototype.unfollow = function(){
-	this.position.add(v2.add(this.getAbsPos(), v2.minus(this.position))).add(this._followv2)
+    //Get this position to be what it looks like
+    this.position.add(v2.add(this.getAbsPos(), v2.minus(this.position))).add(this._followv2)
 	this._follow = false;
 }
 
 function Layer (){
-    muuNode.call(this);
 	this.objects = [];
 }
 
@@ -255,8 +266,6 @@ Layer.prototype.constructor = Layer;
 
 Layer.prototype.add = function(nod){
 	nod.parent = this;
-    if(this.root) nod.root = this.root
-    else nod.root = this;
 	this.objects.push(nod);
 	return this;
 }
@@ -273,20 +282,17 @@ Layer.prototype.paintTo = function(context){
 	context.translate(this.getPos().x, this.getPos().y);
 	context.rotate(this.rotation());
 	context.scale(this.scale(), this.scale());
-	for(var i in this.objects){
-		var obj = this.objects[i];
-		if(obj instanceof Layer)
-			obj.paintTo(context);
-		else
-			obj.paintTo(context);
-	}
+    var l = this.objects.length;
+	for(var i =0; i< l; i++)
+		var obj = this.objects[i].paintTo(context);
 	context.scale(1/this.scale(), 1/this.scale());
-  context.rotate(-this.rotation());
+    context.rotate(-this.rotation());
 	context.translate(-this.getPos().x, -this.getPos().y)
 }
 
 function Sprite(img){
 	this.img = muu.getSprite(img);
+    this._size = new v2(this.img.size.x, this.img.size.y)
 }
 
 Sprite.prototype = new muuNode();
@@ -294,9 +300,9 @@ Sprite.constructor = Sprite;
 
 Sprite.prototype.size = function(s, y){
 	if(typeof s === "undefined")
-		return this.img.ssize;
-	else if(s instanceof v2) this.img.ssize = s;
-	else this.img.ssize = new v2(s,y);
+		return this._size;
+	else if(s instanceof v2) this._size = s;
+	else this._size = new v2(s,y);
     return this;
 }
 
@@ -313,30 +319,29 @@ Sprite.prototype.sprite = function(){
     return this.img.name;
 }
 
+// Default region
 Sprite.prototype.region = function(){
     if (arguments.length) console.log("you can't overwrite the region of a sprite");
     var t = this;
-    return new rRect(function(){
-return v2.add(t.getAbsPos(), v2.scalar(-0.5,t.size()))}, function(){return t.size()
-});
+    return new rRect(function(){return v2.add(t.getAbsPos(), v2.scalar(-0.5,t.size()))}, function(){return t.size()});
 }
 
 Sprite.prototype.paintTo = function(context){
 	context.translate(this.getPos().x, this.getPos().y);
 	context.rotate(this.rotation());
-	context.scale(this.scale(), this.scale());
     context.translate(-this.size().x/2, -this.size().y/2)
-	this.img.paintTo(context);
-    context.translate(this.size().x/2, this.size().y/2)
+	context.scale(this.scale(), this.scale());
+	this.img.paintTo(context, this.size());
 	context.scale(1/this.scale(), 1/this.scale());
-  context.rotate(-this.rotation());
+    context.translate(this.size().x/2, this.size().y/2)
+    context.rotate(-this.rotation());
 	context.translate(-this.getPos().x, -this.getPos().y)
 }
 
+// Should be renamed to fillstrokable or something
 function Paintable(){
 	this._fill = "rgb(0,0,0)";
 	this._stroke = "rgb(0,0,0)";
-	this.paintTo = function(canvas){}; // it needs to be overwriten by parent
 }
 
 Paintable.prototype = new muuNode();

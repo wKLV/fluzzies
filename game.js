@@ -1,14 +1,25 @@
-goog.require('box2d.BodyDef');
-goog.require('box2d.BoxDef');
-goog.require('box2d.CircleDef');
-goog.require('box2d.CircleShape');
-goog.require('box2d.PolyDef');
-goog.require('box2d.Vec2');
-goog.require('box2d.World');
+(function() {
+  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  window.requestAnimationFrame = requestAnimationFrame;
+})();
 
-var muu;
+var   b2Vec2 = Box2D.Common.Math.b2Vec2
+            ,   b2 = Box2D.Common.Math
+            ,   b2BodyDef = Box2D.Dynamics.b2BodyDef
+            ,   b2Body = Box2D.Dynamics.b2Body
+            ,   b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+            ,   b2Fixture = Box2D.Dynamics.b2Fixture
+            ,   b2World = Box2D.Dynamics.b2World
+            ,   b2MassData = Box2D.Collision.Shapes.b2MassData
+            ,   b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+            ,   b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+            ;
+
 window.onload = function(){
-muu = new muu2d() ,speed = 1, star1 = star2 = star3 = false, Step = 5;
+var speed = 1, Step = 10; //Speed changes how many steps are processed in real time. Step is the length of each Step
+var star1 = star2 = star3 = false // We start without stars :(
+// Add stuff
 muu.addAtlas("assets/graphics.png", "assets/graphics.js");
 var staticroot = muu.addCanvas("static", false);
 var dinroot = muu.addCanvas("dinamic", true);
@@ -19,8 +30,6 @@ muu.whenReady(function(){
     menubackround = new Rect().size(100,600).fill("rgb(250, 245, 225)").moveTo(1400, 200),
     powers = [], power = true, pows = new Layer,
     layer = new Layer, spikes = new Layer,
-   // background = new Rect().size(1500, 1000).
-     //   moveTo(750, 500).fill("assets/fondo1.png"),
     instructions = $("#instructions"),
     labels = new Layer,
     nballslabel = new Label("0").moveTo(90,10).stroke("rgba(0,0,0,0)"),
@@ -32,12 +41,12 @@ muu.whenReady(function(){
     star2s = new Sprite("star").size(20,20).moveTo(390, 10),
     star3s = new Sprite("star").size(20,20).moveTo(430, 10),
     checkStars, passed = false,
-    play = new Sprite("pause").size(50,50).moveTo(1360,30),
-    reset, resetlabel = new Sprite("Reset").size(50,50).moveTo(1470,30),
-    timeplus = new Sprite("timeplus").size(50,50).moveTo(1420, 30)
+    play = new Sprite("pause").size(70,70).moveTo(1260,60),
+    reset, resetlabel = new Sprite("Reset").size(70,70).moveTo(1440,60),
+    timeplus = new Sprite("timeplus").size(70,70).moveTo(1350, 60)
     play.event(["mousedown"], function(e){
-       if(stop) { stop = false; play.change("pause"); instructions.hide(); }
-       else { stop = true; play.change("play");}
+       if(stop) { stop = false; play.change("pause"); instructions.hide(); lastTime = 0;}
+       else { stop = true; play.change("play"); lastTime = 0;}
     })
     timeplus.event(["mousedown"], function(e){
         if(speed <4){
@@ -51,15 +60,36 @@ muu.whenReady(function(){
     balls = {}, ids=0;
     labels.add(nballslabel).add(ballsSavedlabel).add(ntoucheslabel).add(tocheslabel).
         add(pass).add(star1s).add(star2s).add(star3s).add(resetlabel).add(timeplus).add(play);
-   // scene.add(background);
+    // scene.add(background);
     menu.add(menubackround);
+
+    // Layers organization in fluzzies
     staticroot.add(menu).add(ground).add(labels);
     dinroot.add(spikes).add(layer).add(pows);
+
+    // Box2D stuff
+    var world = new b2World(new b2Vec2(0, 50), false);
+
+    var normalDef = new b2FixtureDef;
+    normalDef.density = 0.5;
+    normalDef.restitution = 0.2;
+    normalDef.friction = 1;
+
+    var heavyDef = new b2FixtureDef;
+    heavyDef.density = 4;
+    heavyDef.restitution = 0.6;
+    heavyDef.friction = 0.7;
+
+    var normalball = new b2CircleShape(15);
+
+    // To get what level are we in
     var params = document.URL.split("?")
+    if(params[1]!== "11")
     $.getJSON("map"+params[1]+".js", function(data){
+        // If in level 0 tutorial
         if(params[1] === "0"){
             instructions.show().css("background-image", "url(assets/instruction0.png)");
-            stop = true;
+            stop = true; lastTime = 0;
             play.change("play");
         }
         map = data;
@@ -69,22 +99,26 @@ muu.whenReady(function(){
         basein = new Sprite("in").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
         layer.add(base).add(basein);
 
-        var binbodydef = new box2d.BodyDef;
+        var binbodydef = new b2BodyDef;
+        var binfix = new b2FixtureDef;
         binbodydef.position.Set(data.catcher.position[0], data.catcher.position[1])
-        binbodydef.AddShape(bin);
+        binfix.shape = new b2PolygonShape;
+        binfix.shape.SetAsBox(75,75)
+
         binbodydef.userData = {name:"in", visual:basein};
         var binbody = world.CreateBody(binbodydef);
-        binbodydef.userData = {name:"in", visual:basein}
+        binbody.CreateFixture(binfix);
 
         basein.event(["mousedown"], function(e){
             if(passed) win();
         })
         bain = basein, basin = data.catcher;
+        // function to check if we have won a star or pass to the next level
         checkStars = function(){
             if(!passed && nballs >= basin.pass.coolies && (ntouches <= basin.pass.touches || typeof basin.pass.touches === "undefined")){
                 passed = true; basein.change("in-open"); pass.change("doorgot");
                 if(params[1] === "0"){
-                    stop= true; play.change("play"); instructions.css("background-image", "url(assets/instruction1.png)").show();
+                    stop= true; play.change("play"); instructions.css("background-image", "url(assets/instruction1.png)").show(); lastTime = 0;
                 }
             }if(!star1 && nballs >= basin.star1.coolies && (ntouches <= basin.star1.touches || typeof basin.star1.touches === "undefined")){
                star1s.change("stargot"); star1 = true;
@@ -94,6 +128,7 @@ muu.whenReady(function(){
                 star3s.change("stargot");star3=true; win();
             }
         }
+        // To reset the level
         resetlabel.event(["mousedown"],function(){
             $.each(balls, function(i,v){
                 todelete[v.ids] = v.physics;
@@ -111,17 +146,18 @@ muu.whenReady(function(){
         });
        function createGround(v, l){
             var position= v.position;
-           position = new box2d.Vec2(position.x, position.y)
-            var ground = new box2d.PolyDef;
-            ground.restitution = .6
-            ground.density = 0;
-            ground.friction = 1;
-            ground.SetVertices(l);
-            var gbody = new box2d.BodyDef;
+           position = new b2Vec2(position.x, position.y)
+            var ground = new b2PolygonShape;
+            ground.SetAsArray(l, l.length);
+            var gbody = new b2BodyDef;
             gbody.position.Set(position.x, position.y);
-            gbody.AddShape(ground);
             gbody.userData = {name:"ground"}
-            world.CreateBody(gbody);
+            var gfix = new b2FixtureDef;
+            gfix.restitution = .6
+            gfix.density = 0;
+            gfix.friction = 1;
+            gfix.shape = ground;
+            world.CreateBody(gbody).CreateFixture(gfix);
        }
         var img = new Image();
         img.onload = function(){
@@ -130,20 +166,20 @@ muu.whenReady(function(){
                 if(v.shape){
                     var shape = v.shape, position= v.position, l = [];
                     $.each(shape, function(i,v){
-                        l.push([shape[i].x, shape[i].y])
+                        l.push(new b2Vec2(shape[i].x, shape[i].y))
                         shape[i] = new v2(shape[i].x, shape[i].y)
                     });
 
                     createGround(v, l);
                     var shape = v.shape, position= v.position, l = [];
-                    var vis = new Polygon(shape).fill(texture).stroke(3, 'rgb(0,0,0)').moveTo(position.x, position.y);
+                    var vis = new Polygon(shape).fill(texture).stroke('rgb(0,0,0)').moveTo(position.x, position.y);
                     ground.add(vis);
                 }
                 else if(v.megashape){
                     $.each(v.megashape, function(i,v){
                         var shape = v.shape, position= v.position, l = [];
                         $.each(shape, function(i,v){
-                            l.push([shape[i].x, shape[i].y])
+                            l.push(new b2Vec2(shape[i].x, shape[i].y))
                             shape[i] = new v2(shape[i].x, shape[i].y)
                          });
 
@@ -163,26 +199,32 @@ muu.whenReady(function(){
         $.each(data.spikes, function(i,v){
             var sprite = new Sprite("Pinchos2").size(260, 100).moveTo(v.position.x, v.position.y);
 
-            var spiks = new box2d.PolyDef;
+            var spiks = new b2PolygonShape;
             spiks.restitution = .6
             spiks.density = 0;
             spiks.friction = 1;
-            spiks.SetVertices([[-130,50],[-130,-50],[130,-50],[130,50]]);
+            spiks.SetAsBox(130,50);
 
-            var sbodyDef = new box2d.BodyDef;
+            var sbodyDef = new b2BodyDef;
             sbodyDef.position.Set(v.position.x, v.position.y);
-            sbodyDef.AddShape(spiks);
+            var sfix = new b2FixtureDef;
+            sfix.density = 0;
+            sfix.restitution = 0.1;
+            sfix.friction = 10;
+            sfix.shape = spiks;
 
             sbodyDef.userData = {name:"spikes"};
 
             var spikes_body = world.CreateBody(sbodyDef);
+            spikes_body.CreateFixture(sfix);
 
             spikes.add(sprite);
         });
         $.each(data.powers, function(i,v){
-            var s = new Sprite(v).size(75,75).
-                moveTo(1500-50, 250+95*i);
+            // The sprite in the menu
+            var s = new Sprite(v).size(75,75).moveTo(1500-50, 250+95*i);
             menu.add(s);
+            // the layer of the power with its effects
             var layer = new Layer;
             if(v === "anti"){
                 var antisprite = s,
@@ -198,7 +240,7 @@ muu.whenReady(function(){
             }
             else if(v=="accele"){
                 var rotateSprite = s;
-                var rotateField = new Circle().radius(300).fill("rgba(10,250,20, 0.2)");
+                var rotateField = new Circle().radius(150).stroke("rgba(0,0,0,0)").fill("rgba(10,250,20, 0.2)");
                 layer.add(rotateField);
             }
             layer.event(["mousedown"], function(e){
@@ -259,7 +301,7 @@ muu.whenReady(function(){
              s.event(["mousedown"], function(e){
                 layer.follow(muu.getMouse());
              });
-                s.event(["mouseup"], function(){layer.unfollow()});
+             s.event(["mouseup"], function(){layer.unfollow()});
 
         })
 
@@ -267,56 +309,120 @@ muu.whenReady(function(){
         muu.renderAll();
         requestAnimationFrame(render);
     })
+    else{
+        function updateBlinks(){}
+        var renderSuccess = function(){
+            updateBlinks()
+            $.each(balls, function(i,v){
+            if(Math.abs(v.physics.GetAngularVelocity())>10)
+                if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
+                    v.visual.change("pelusa"+v.hab+"eyesmouth")
+                else
+                    if(v.visual.sprite() === "pelusa"+v.hab+"eyesmouth" || v.visual.sprite() === "pelusa"+v.hab+"mouth")
+                        setTimeout(function(){v.visual.change("pelusa"+v.hab+"eyes");},1000);
+                    else
+                        v.visual.change("pelusa"+v.hab+"eyes")
+            else
+                if(Math.abs(v.physics.GetLinearVelocity().Length()) > 100 && v.physics.GetContactList())
+                    v.visual.change("pelusa"+v.hab+"mouth")
+                else
+                    if(v.visual.sprite() === "pelusa"+v.hab+"mouth" || v.visual.sprite() == "pelusa"+v.hab+"yesmouth")
+                        setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
+                    else
+                        v.visual.change("pelusa"+v.hab)
 
-    var gravity = new box2d.Vec2(0, 100);
-    var bounds = new box2d.AABB();
-    bounds.minVertex.Set(-document.body.clientWidth, -document.body.clientHeight);
-    bounds.maxVertex.Set(2*document.body.clientWidth,2*document.body.clientHeight);
-    var world = new box2d.World(bounds, gravity, false);
 
+            var pos = v.physics.GetWorldCenter().Copy();
+            var rot = v.physics.GetAngle();
 
-    var normalDef = new box2d.CircleDef;
-    normalDef.radius = 15;
-    normalDef.density = 0.5;
-    normalDef.restitution = 0.2;
-    normalDef.friction = 1;
+            v.visual.rotation(rot);
+            v.visual.moveTo(pos.x, pos.y);
+        });
 
-    var heavyDef = new box2d.CircleDef;
-    heavyDef.radius = 15;
-    heavyDef.density = 4;
-    heavyDef.restitution = 0.1;
-    heavyDef.friction = 0.7;
+            muu.render()
+            world.Step(1/70, 8)
+            requestAnimationFrame(renderSuccess);
+        }
+        for(var i =0; i< 100; i++){
+                ids ++;
+            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var c = new COOLY({hability:"heavy"}).createVisual().moveTo(pos.x, pos.y);
+                var v = new b2BodyDef;
+                v.type = b2Body.b2_staticBody;
+                v.position.Set(pos.x, pos.y);
+                v.userData = {name:"cooly", visual:c, id:ids, hab:"heavy"};
+                v.angularDamping = 0;
+                heavyDef.id = ids;
+                heavyDef.shape = normalball;
+                v = world.CreateBody(v)
+                v.CreateFixture(heavyDef);
+                balls[ids] = {visual:c, physics:v,ids:ids, hab:"heavy"};
+                layer.add(c);
+        }
+        for(var i=0; i<30; i++){
+                ids ++;
+            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var c = new COOLY().createVisual().moveTo(pos.x, pos.y);
+                var v = new b2BodyDef;
+                v.type = b2Body.b2_dynamicBody;
+                v.position.Set(pos.x, pos.y);
+                v.userData = {name:"cooly", visual:c, id:ids, hab:"none"};
+                v.angularDamping = 0;
+                normalDef.id = ids;
+                normalDef.shape = normalball;
+                v = world.CreateBody(v)
+                v.CreateFixture(normalDef);
+                balls[ids] = {visual:c, physics:v, ids:ids, hab:"none"};
+                layer.add(c);
+        }
+        for(var i=0; i<10; i++){
+            ids++;
+            var pos = new v2(Math.random()*1400, Math.random()*900)
+            var c = new COOLY({hability:"heavy"}).createVisual().moveTo(pos.x, pos.y);
+                var v = new b2BodyDef;
+                v.type = b2Body.b2_dynamicBody;
+                v.position.Set(pos.x, pos.y);
+                v.userData = {name:"cooly", visual:c, id:ids, hab:"heavy"};
+                v.angularDamping = 0;
+                heavyDef.id = ids;
+                heavyDef.shape = normalball;
+                v = world.CreateBody(v)
+                v.CreateFixture(heavyDef);
+                balls[ids] = {visual:c, physics:v, ids:ids, hab:"heavy"};
+                layer.add(c);
+        }
+        pows.add(new Label("CONGRATULATIONS").moveTo(600, 400).scale(3));
+        pows.add(new Label("this is only a basic version of what this game will become").moveTo(470, 430).scale(2.5));
+        pows.add(new Label("if you liked it stay tuned for more!").moveTo(570, 460).scale(2.75));
+        requestAnimationFrame(renderSuccess);
+    }
 
-
-    var bin = new box2d.PolyDef;
-    bin.density = 0;
-    bin.SetVertices([[-75,75],[-75,-75],[75,-75],[75,75]])
 
     var listener = {}, todelete = {}, ntodelete = {};
-    listener.PreSolve = function(a,b){
+    listener.PreSolve = function(contact){
+        var a = contact.m_fixtureA.m_body, b = contact.m_fixtureB.m_body;
         if(a.GetUserData().name === "cooly" && ! deleted[a.GetUserData().id]){
-            if(b.GetUserData().name === "spikes")
-                return a;
-            else if(b.GetUserData().name === "in"){
+            if(b.GetUserData().name === "spikes"){
+                if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
+            } else if(b.GetUserData().name === "in"){
                     b.GetUserData().visual.change("in-open")
                     setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in")}, 1500);
-
                 nballs ++;
-                nballslabel.text(""+nballs).scale(2,2);
+                nballslabel.text(""+nballs).scale(2);
                 setTimeout(function(){
                     nballslabel.scale(1.5,1.5); staticroot.render();
                 }, 1500);
                 staticroot.render();
                 checkStars();
-                return a;
+                if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
             }
         }
         else if(b.GetUserData().name === "cooly" && ! deleted[b.GetUserData().id])
-            if(a.GetUserData().name === "spikes")
-                return b;
-            else if(a.GetUserData().name === "in"){
+            if(a.GetUserData().name === "spikes"){
+                if(!deleted[b.GetUserData().id]) todelete[b.GetUserData().id] = b, deleted[b.GetUserData().id]=true;
+            } else if(a.GetUserData().name === "in"){
                 nballs ++;
-                nballslabel.text(""+nballs).scale(2,2);
+                nballslabel.text(""+nballs).scale(2);
                 setTimeout(function(){
                     nballslabel.scale(1.5,1.5);staticroot.render();
                 }, 1500);
@@ -324,24 +430,30 @@ muu.whenReady(function(){
                 checkStars();
                     a.GetUserData().visual.change("in-open")
                     setTimeout(function(){if(!passed)a.GetUserData().visual.change("in")}, 500);
-
-                return b;
+                if(!deleted[b.GetUserData().id]) todelete[b.GetUserData().id] = b, deleted[b.GetUserData().id]=true;
             }
     }
-    var step = Step, deleted = {};
+    var lis = new Box2D.Dynamics.b2ContactListener;
+    lis.PreSolve = listener.PreSolve;
+    world.SetContactListener(lis);
+
+    var step = Step, deleted = {}, lastTime = 0;
     function render(dt) {
     if(ready && !stop){
-        dt /= 500;
-        var steps = Math.floor(dt / Step * speed)
+        if(lastTime === 0) lastTime = dt;
+        var t = lastTime;
+        lastTime = dt, dt -= t;
+        var steps = Math.floor(dt / step * speed *2)
         for(var i=0; i< steps; i++){
             $.each(todelete, function(i,a){
                 var v = balls[a.GetUserData().id]
                 function reduce(){
-                    var s = v.visual.scale().x;
+                    var s = v.visual.scale();
                     var r = v.visual.rotation()
-                    v.visual.rotation(r+ dt/s)
-                    v.visual.scale(s-0.1, s-0.1)
-                    if(s > 0.1) setTimeout(reduce, 50);
+                    r %= Math.PI*2
+                    v.visual.rotation(r+ r/s)
+                    v.visual.scale(s-0.1)
+                    if(s > 0.1) setTimeout(reduce, 100);
                     else {layer.rem(v.visual);
                         delete balls[v.ids];
                     }
@@ -354,153 +466,97 @@ muu.whenReady(function(){
 
             $.each(powers, function(i,p){
                 $.each(balls, function(i,v){
-                    var d = v.physics.GetCenterPosition().Copy().subtract(p.visual.getPos());
+                    var d = v.physics.GetWorldCenter().Copy()
+                    d.Subtract(p.visual.getPos());
                     var dlength = d.Normalize()
                     if(dlength<5)
                         dlength = 5;
                     if(p.power === "anti" && dlength < 150){
-                        if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
-                            v.physics.ApplyTorque(1);
-                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(1280*step, d), p.visual.getPos());
+         //               if(b2Vec2.CrossV2V2(v.physics.GetLinearVelocity(),new b2Vec2(0,1)) === 0)
+                          //  v.physics.ApplyTorque(1);
+                        d.Multiply(1500)
+                        v.physics.ApplyImpulse(d, p.visual.getPos());
                     }
-                    if(dlength <30) dlength = 30
+            //        if(dlength <30) dlength = 30
                     else if(p.power === "atra" && dlength <150){
-                        if(box2d.Vec2.cross(v.physics.GetLinearVelocity(),new box2d.Vec2(0,1)) === 0)
-                            v.physics.ApplyTorque(10);
-                        v.physics.ApplyImpulse(box2d.Vec2.multiplyScalar(-1280*step, d), p.visual.getPos());
+         //               if(b2Vec2.CrossV2V2(v.physics.GetLinearVelocity(),new b2Vec2(0,1)) === 0)
+            //                v.physics.ApplyTorque(10);
+                        d.Multiply(-250);
+                        v.physics.ApplyImpulse(d, p.visual.getPos());
                     }
                     else if(p.power === "accele" && dlength <150)
-                        v.physics.ApplyTorque(2000000*step)
+                        v.physics.ApplyTorque(600000)
             });
-                p.updateEffects(step/2);
+                p.updateEffects(10);
             })
-            world.Step(step/1000, 8);
- 	    var c = emitter.getNext();
-	    if (c.none){}
+            world.Step(1/50, 8);
+            var c = emitter.getNext();
+            if (c.none){}
             else if(c.end){
-		        if(params[1]==="0" && !passed){
-                    stop=true; play.change("play");
+                if(params[1]==="0" && !passed){
+                    stop=true; play.change("play"); lastTime = 0;
                     instructions.css("background-image", "url(assets/instruction2.png)").show();
                 }
-	    }
-	   else if(c){
+            }
+            else if(c){
                 emitter.visual.change("in-open")
                 setTimeout(function(){emitter.visual.change("in")}, 1500);
                 ids ++;
                 var hab = c.hability;
                 switch(c.hability){
-                    case "none": ballDef = normalDef; break
-                    case "heavy": ballDef = heavyDef; break;
+                    case "none": fixDef = normalDef; ballDef = normalball; break
+                    case "heavy": fixDef = heavyDef; ballDef = normalball; break;
                 }
                 var c = c.createVisual().moveTo(emitter.position[0], emitter.position[1]);
-                var ballDef;
-                var v = new box2d.BodyDef;
+                var v = new b2BodyDef;
+                v.type = b2Body.b2_dynamicBody;
+                v.position.Set(map.emitter.position[0], map.emitter.position[1]);
                 v.userData = {name:"cooly", visual:c,hab:hab, id:ids};
-                v.position.Set(emitter.position[0], emitter.position[1]);
                 v.angularDamping = 0;
-                v.id = ids;
-                v.AddShape(ballDef);
-                v = world.CreateBody(v);
+                fixDef.id = ids;
+                fixDef.shape = ballDef;
+                v = world.CreateBody(v)
+                v.CreateFixture(fixDef);
                 balls[ids] = {visual:c, physics:v, hab:hab, ids:ids};
                 layer.add(c);
             }
-            }
-            $.each(balls, function(i,v){
-                if(Math.abs(v.physics.GetAngularVelocity())>10)
-                    if(Math.abs(v.physics.GetLinearVelocity().magnitude() > 100) && v.physics.GetContactList())
-                        v.visual.change("pelusa"+v.hab+"eyesmouth")
-                    else
-                        if(v.visual.sprite() === "pelusa"+v.hab+"eyesmouth" || v.visual.sprite() === "pelusa"+v.hab+"mouth")
-                            setTimeout(function(){v.visual.change("pelusa"+v.hab+"eyes");},1000);
-                        else
-                            v.visual.change("pelusa"+v.hab+"eyes")
+            world.ClearForces();
+        }
+        $.each(balls, function(i,v){
+            if(Math.abs(v.physics.GetAngularVelocity())>10)
+                if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
+                    v.visual.change("pelusa"+v.hab+"eyesmouth")
                 else
-                    if(Math.abs(v.physics.GetLinearVelocity().magnitude()) > 100 && v.physics.GetContactList())
-                        v.visual.change("pelusa"+v.hab+"mouth")
+                    if(v.visual.sprite() === "pelusa"+v.hab+"eyesmouth" || v.visual.sprite() === "pelusa"+v.hab+"mouth")
+                        setTimeout(function(){v.visual.change("pelusa"+v.hab+"eyes");},1000);
                     else
-                        if(v.visual.sprite() === "pelusa"+v.hab+"mouth" || v.visual.sprite() == "pelusa"+v.hab+"yesmouth")
-                            setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
-                        else
-                            v.visual.change("pelusa"+v.hab)
+                        v.visual.change("pelusa"+v.hab+"eyes")
+            else
+                if(Math.abs(v.physics.GetLinearVelocity().Length()) > 100 && v.physics.GetContactList())
+                    v.visual.change("pelusa"+v.hab+"mouth")
+                else
+                    if(v.visual.sprite() === "pelusa"+v.hab+"mouth" || v.visual.sprite() == "pelusa"+v.hab+"yesmouth")
+                        setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
+                    else
+                        v.visual.change("pelusa"+v.hab)
 
 
-                var pos = v.physics.GetCenterPosition().clone();
-                var rot = v.physics.GetRotation();
+            var pos = v.physics.GetWorldCenter().Copy();
+            var rot = v.physics.GetAngle();
 
-                v.visual.rotation(rot);
-                v.visual.moveTo(pos.x, pos.y);
-            });
-            for(var c=world.GetContactList(); c; c = c.GetNext()){
-                var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
-                if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
-            }
+            v.visual.rotation(rot);
+            v.visual.moveTo(pos.x, pos.y);
+        });
+           // for(var c=world.GetContactList(); c; c = c.GetNext()){
+              //  var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
+             //   if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
+        //    }
               //  todelete;
               //  ntodelete = {};
-        }
-        muu.render();
-        requestAnimationFrame(render);
-     }
-
-     //background.event(rRect(["mousedown", "touchstart"], function(e){
-       /* if(power){
-            power.visual.moveTo(e.position.x, e.position.y);
-            ntouches ++;
-            ntoucheslabel.text(""+ntouches).scale(2,2);
-            setTimeout(function(){
-                ntoucheslabel.scale(1.5,1.5);
-            }, 3000);
-
-        }*/
-      // console.log(e.screenPosition)
-    //});
-});
-}
-//goog.exportSymbol('CoolGame.start', CoolGame.start);
-
-//$(document).ready(function(){
- /*   var renderer = new THREE.WebGLRenderer({antialias:true});
-    var body = document.body, html = document.documentElement;
-    renderer.setSize( document.body.clientWidth, Math.max( body.scrollHeight, body.offsetHeight,
-            html.clientHeight, html.scrollHeight, html.offsetHeight ) );
-    document.body.appendChild(renderer.domElement);
-    renderer.setClearColorHex(0x111111, 1.0);
-    renderer.clear();
-
-    var scene = new THREE.Scene;
-    var camera = new THREE.PerspectiveCamera(
-        35,         // Field of view
-        800 / 640,  // Aspect ratio
-        .1,         // Near
-        10000       // Far
-    );
-    camera.position.set(0,0 ,10);
-
-
-    var cube = function(){return new THREE.Mesh(
-        new THREE.CubeGeometry(0.5,0.5,0.5),
-        new THREE.MeshLambertMaterial({color:0x444444})
-    )}
-
-    scene.add(camera);
-
-    var directionallight = new THREE.DirectionalLight(0xffffff, 1.5);
-    directionallight.position.set(1, -1, 3);
-    scene.add(directionallight);
-
-*/
-/*    var render = function(time){
-        renderer.render(scene, camera);
-        var c = emitter.getNext(time);
-        if(c){
-            var c = cube();
-
-            scene.add(c);
-        }
-        requestAnimationFrame(render);
-}
-
+    }
+    muu.render();
     requestAnimationFrame(render);
-*/
+    }
+});
 
-//});
-
+}

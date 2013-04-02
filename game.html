@@ -1,9 +1,10 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>Fluzzies play</title>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <script src="libs/jquery.js"></script>
-<script src="build.js"> </script>
+<script src="libs/Box2dWeb.js"> </script>
 <script src ="libs/muu2dbase.js"></script>
 <script src ="libs/muu2dshapes.js"></script>
 <script src="game.js"> </script>
@@ -11,19 +12,42 @@
 </head>
 
 <body>
-<div style="background-image:url(assets/fondo1.png); background-size:contains; position:absolute; width:1500px; height:1000px"  width="1500" height="1000"></div>
-<canvas style="position:absolute" width="1500" height="1000" id="static">
+<div class="gamediv" style="background-image:url(assets/fondo1.png); background-size:cover; position:absolute; width:1500px; height:1000px" ></div>
+<canvas class="gamecanvas" style="position:absolute" width="1500" height="1000" id="static">
 
 </canvas>
-<canvas style="position:absolute" width="1500" height="1000" id="dinamic">
+<canvas class="gamecanvas" style="position:absolute" width="1500" height="1000" id="dinamic">
 
 </canvas>
-<div style="background-image:url(assets/instruction0.png); background-size:contain; position:absolute; width:1500px; height:1000px; display:none; pointer-events:none"  width="1500" height="1000" id="instructions"></div>
+<div class="gamediv" style="background-image:url(assets/instruction0.png); background-repeat:no-repeat; background-size:contain; position:absolute;rigth:0;display:none; pointer-events:none" id="instructions"></div>
 
-<div style="display:none;position:absolute;width:75%; height:100%; z-index:5; opacity:0.85; overflow-y:scroll;" id="success"></div>
+<div style="display:none;position:absolute;0;width:75%; height:100%; z-index:5; opacity:0.85; overflow-y:scroll;" id="success"></div>
 
 <script>
-$(document).ready(function(){$("#success").hide();$("instructions").hide();});
+// Code to get the game to fill the screen as much as it can
+var resize = 1;
+$(document).ready(function(){
+    $("#success").hide();$("instructions").hide();
+    function resizeGame(){
+        var aspect = 15/10;
+        if($(window).outerHeight()*aspect < $(window).outerWidth()) {
+            resize = 1000/ $(window).outerHeight()
+            var resizedHeight = $(window).outerHeight();
+            var resizedWidth = resizedHeight * aspect;
+        }
+
+        else {
+            resize = 1500/$(window).outerWidth()
+            var resizedWidth = $(window).outerWidth();
+            var resizedHeight = resizedWidth / aspect;
+        }
+        $(".gamediv").width(resizedWidth).height(resizedHeight);
+        $(".gamecanvas").width(resizedWidth).height(resizedHeight);
+    }
+    resizeGame();
+    $(window).resize(resizeGame);
+});
+// Call when win
 function win(){
   var currentlevel = parseInt(document.URL.split("?")[1]);
   $("#success").show().css("margin-left","auto").css("margin-right", "auto").css("left","0").css("right","0").load("levelcompleted.html", function(){
