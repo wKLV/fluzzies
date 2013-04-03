@@ -1,0 +1,111 @@
+{
+"sprite-in-open":{
+    "size":{"x": 396,"y": 406},
+    "position":{"x":5, "y":5}
+}, 
+
+"sprite-pause":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":411, "y":5}
+}, 
+
+"sprite-accele":{
+    "size":{"x": 101,"y": 115},
+    "position":{"x":471, "y":5}
+}, 
+
+"sprite-atra":{
+    "size":{"x": 99,"y": 96},
+    "position":{"x":582, "y":5}
+}, 
+
+"sprite-anti":{
+    "size":{"x": 99,"y": 96},
+    "position":{"x":582, "y":111}
+}, 
+
+"sprite-door":{
+    "size":{"x": 50,"y": 55},
+    "position":{"x":411, "y":111}
+}, 
+
+"sprite-Reset":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":411, "y":217}
+}, 
+
+"sprite-doorgot":{
+    "size":{"x": 50,"y": 56},
+    "position":{"x":471, "y":217}
+}, 
+
+"sprite-in":{
+    "size":{"x": 396,"y": 406},
+    "position":{"x":691, "y":5}
+}, 
+
+"sprite-pelusaheavy":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":5, "y":421}
+}, 
+
+"sprite-pelusanone":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":115, "y":421}
+}, 
+
+"sprite-pelusaheavyeyesmouth":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":225, "y":421}
+}, 
+
+"sprite-pelusaheavymouth":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":335, "y":421}
+}, 
+
+"sprite-pelusaheavyeyes":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":445, "y":421}
+}, 
+
+"sprite-pelusanoneeyes":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":555, "y":421}
+}, 
+
+"sprite-pelusanoneeyesmouth":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":665, "y":421}
+}, 
+
+"sprite-pelusanonemouth":{
+    "size":{"x": 100,"y": 97},
+    "position":{"x":775, "y":421}
+}, 
+
+"sprite-play":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":885, "y":421}
+}, 
+
+"sprite-star":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":945, "y":421}
+}, 
+
+"sprite-stargot":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":1005, "y":421}
+}, 
+
+"sprite-timeplus":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":885, "y":481}
+}, 
+
+"sprite-timereg":{
+    "size":{"x": 50,"y": 50},
+    "position":{"x":945, "y":481}
+}
+}
