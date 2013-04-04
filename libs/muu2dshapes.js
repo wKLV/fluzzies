@@ -13,10 +13,10 @@ Rect.prototype.size = function(x,y){
 	return this;
 }
 
-// TODO fix region to check the position at the time it is asked as in sprite
 Rect.prototype.region = function(){
 	if (arguments.length) console.log("you can't overwrite the region of a rectangle");
-	return new rRect(function(){return v2.add(this.position, v2.scalar(this._size, -0.5))}, function(){return this._size});
+	var t = this;
+	return new rRect(function(){return v2.scalar(this._size, -0.5).add(t.getAbsPos())}, function(){return t._size});
 }
 
 Rect.prototype.paintTo = function(context){
@@ -45,10 +45,10 @@ Circle.prototype.radius = function(r){
     return this;
 }
 
-// TODO fix as Rect
-Circle.region = function(){
+Circle.prototype.region = function(){
 	if (arguments.length) console.log("you can't overwrite the region of a circle");
-	return new rCirc(this.position, this.r);
+	var t = this;
+	return new rCirc(function(){return t.getAbsPos()}, t.r);
 }
 
 Circle.prototype.paintTo = function(context){

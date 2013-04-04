@@ -107,7 +107,7 @@ function v2 (x,y){
 v2.add = function(x,y){
 		var tx = this.x || 0, ty = this.y || 0;
 		if(x instanceof v2){
-			if(typeof this.x === "undefined" && y instanceof v2)
+			if(y instanceof v2)
 				tx = x.x +y.x, ty = x.y+ y.y;
 			else tx += x.x, ty += x.y;
 		}
@@ -115,7 +115,7 @@ v2.add = function(x,y){
 			tx += x;
 			ty  += y;
 		}
-	if(typeof this.x === "undefined")
+	if(typeof this.x === "undefined" ||  isNaN(this.x))
 		return new v2(tx, ty);
 	else this.x = tx, this.y = ty;
 	return this;
@@ -123,10 +123,10 @@ v2.add = function(x,y){
 v2.prototype.add =  v2.add
 
 v2.minus = function(v){
-	if(typeof this.x !== "undefined")
-		this.x = - this.x, this.y = -this.y
-	else
+	if(typeof this.x !== "undefined" || isNaN(this.x))
 		return new v2(-v.x, -v.y)
+	else
+		this.x = - this.x, this.y = -this.y
 	return this;
 }
 

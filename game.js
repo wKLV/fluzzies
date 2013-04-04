@@ -144,6 +144,7 @@ muu.whenReady(function(){
                 stop = false; play.change("pause"); instructions.hide();
             }
         });
+        // Create the ground physics
        function createGround(v, l){
             var position= v.position;
            position = new b2Vec2(position.x, position.y)
@@ -159,10 +160,12 @@ muu.whenReady(function(){
             gfix.shape = ground;
             world.CreateBody(gbody).CreateFixture(gfix);
        }
+       // When the ground texture loades
         var img = new Image();
         img.onload = function(){
             var texture = staticroot.context.createPattern(img, "repeat")
             $.each(data.grounds, function(i,v){
+                // If it's a smple polygon
                 if(v.shape){
                     var shape = v.shape, position= v.position, l = [];
                     $.each(shape, function(i,v){
@@ -175,19 +178,21 @@ muu.whenReady(function(){
                     var vis = new Polygon(shape).fill(texture).stroke('rgb(0,0,0)').moveTo(position.x, position.y);
                     ground.add(vis);
                 }
+                // If it is a sum of various polygons
                 else if(v.megashape){
                     $.each(v.megashape, function(i,v){
                         var shape = v.shape, position= v.position, l = [];
                         $.each(shape, function(i,v){
                             l.push(new b2Vec2(shape[i].x, shape[i].y))
-                            shape[i] = new v2(shape[i].x, shape[i].y)
+                            shape[i] = new v2(shape[i].x, shapue[i].y)
                          });
-
+                         // If it is the visual of the megashape
                          if(v.visual){
                             var vis = new Polygon(v.shape).fill(texture).stroke(3, 'rgb(0,0,0)').
                             moveTo(position.x, position.y);
                             ground.add(vis);
                         }
+                        // If it a physics shape
                         else if(v.shape)
                             createGround(v, l);
                     });
@@ -196,6 +201,7 @@ muu.whenReady(function(){
             staticroot.render();
         }
         img.src = "assets/Metal.png"
+        // Load the spikes
         $.each(data.spikes, function(i,v){
             var sprite = new Sprite("Pinchos2").size(260, 100).moveTo(v.position.x, v.position.y);
 
@@ -220,6 +226,7 @@ muu.whenReady(function(){
 
             spikes.add(sprite);
         });
+        //Load the powers
         $.each(data.powers, function(i,v){
             // The sprite in the menu
             var s = new Sprite(v).size(75,75).moveTo(1500-50, 250+95*i);
@@ -243,6 +250,7 @@ muu.whenReady(function(){
                 var rotateField = new Circle().radius(150).stroke("rgba(0,0,0,0)").fill("rgba(10,250,20, 0.2)");
                 layer.add(rotateField);
             }
+            // When the power is pressed
             layer.event(["mousedown"], function(e){
                 layer.follow(muu.getMouse());
                 ntouches ++;
@@ -252,6 +260,7 @@ muu.whenReady(function(){
                 }, 3000);
 
             }, s.region());
+            // When you press on a power in the menu
             s.event(["mousedown"], function(e){
                 menu.rem(s);
                 staticroot.render();
@@ -297,6 +306,7 @@ muu.whenReady(function(){
                     rotateField.rotation(r-dt/10);
                 }
              }});
+             // Remove this event
              s.clearEvent("mousedown");
              s.event(["mousedown"], function(e){
                 layer.follow(muu.getMouse());
@@ -309,10 +319,9 @@ muu.whenReady(function(){
         muu.renderAll();
         requestAnimationFrame(render);
     })
+    // If we are in 11 level
     else{
-        function updateBlinks(){}
         var renderSuccess = function(){
-            updateBlinks()
             $.each(balls, function(i,v){
             if(Math.abs(v.physics.GetAngularVelocity())>10)
                 if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
@@ -331,7 +340,6 @@ muu.whenReady(function(){
                     else
                         v.visual.change("pelusa"+v.hab)
 
-
             var pos = v.physics.GetWorldCenter().Copy();
             var rot = v.physics.GetAngle();
 
@@ -343,6 +351,8 @@ muu.whenReady(function(){
             world.Step(1/60, 8)
             requestAnimationFrame(renderSuccess);
         }
+        // Create the fluzzies by random
+        // Static fluzzies
         for(var i =0; i< 100; i++){
                 ids ++;
             var pos = new v2(Math.random()*1400, Math.random()*500+400)
@@ -359,6 +369,7 @@ muu.whenReady(function(){
                 balls[ids] = {visual:c, physics:v,ids:ids, hab:"heavy"};
                 layer.add(c);
         }
+        // Dynamic fluzzies
         for(var i=0; i<30; i++){
                 ids ++;
             var pos = new v2(Math.random()*1400, Math.random()*500)
@@ -397,7 +408,7 @@ muu.whenReady(function(){
         requestAnimationFrame(renderSuccess);
     }
 
-
+    // listener to the collisions TODO: clean it
     var listener = {}, todelete = {}, ntodelete = {};
     listener.PreSolve = function(contact){
         var a = contact.m_fixtureA.m_body, b = contact.m_fixtureB.m_body;
@@ -405,8 +416,8 @@ muu.whenReady(function(){
             if(b.GetUserData().name === "spikes"){
                 if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
             } else if(b.GetUserData().name === "in"){
-                    b.GetUserData().visual.change("in-open")
-                    setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in")}, 1500);
+                b.GetUserData().visual.change("in-open")
+                setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in")}, 1500);
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2);
                 setTimeout(function(){
@@ -424,12 +435,12 @@ muu.whenReady(function(){
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2);
                 setTimeout(function(){
-                    nballslabel.scale(1.5,1.5);staticroot.render();
+                    nballslabel.scale(1.5,1.5); staticroot.render();
                 }, 1500);
                 staticroot.render();
                 checkStars();
-                    a.GetUserData().visual.change("in-open")
-                    setTimeout(function(){if(!passed)a.GetUserData().visual.change("in")}, 500);
+                a.GetUserData().visual.change("in-open")
+                setTimeout(function(){if(!passed)a.GetUserData().visual.change("in")}, 500);
                 if(!deleted[b.GetUserData().id]) todelete[b.GetUserData().id] = b, deleted[b.GetUserData().id]=true;
             }
     }
@@ -440,11 +451,14 @@ muu.whenReady(function(){
     var step = Step, deleted = {}, lastTime = 0;
     function render(dt) {
     if(ready && !stop){
+        // Get the dt respect to last time
         if(lastTime === 0) lastTime = dt;
         var t = lastTime;
         lastTime = dt, dt -= t;
+        // Calculate how many steps were going to process
         var steps = Math.floor(dt / step * speed *2)
         for(var i=0; i< steps; i++){
+            // Delete fluzzies
             $.each(todelete, function(i,a){
                 var v = balls[a.GetUserData().id]
                 function reduce(){
@@ -464,6 +478,7 @@ muu.whenReady(function(){
             });
             todelete = {};
 
+            // Do powers effect to fluzzies
             $.each(powers, function(i,p){
                 $.each(balls, function(i,v){
                     var d = v.physics.GetWorldCenter().Copy()
@@ -472,15 +487,10 @@ muu.whenReady(function(){
                     if(dlength<5)
                         dlength = 5;
                     if(p.power === "anti" && dlength < 150){
-         //               if(b2Vec2.CrossV2V2(v.physics.GetLinearVelocity(),new b2Vec2(0,1)) === 0)
-                          //  v.physics.ApplyTorque(1);
                         d.Multiply(1500)
                         v.physics.ApplyImpulse(d, p.visual.getPos());
                     }
-            //        if(dlength <30) dlength = 30
                     else if(p.power === "atra" && dlength <150){
-         //               if(b2Vec2.CrossV2V2(v.physics.GetLinearVelocity(),new b2Vec2(0,1)) === 0)
-            //                v.physics.ApplyTorque(10);
                         d.Multiply(-250);
                         v.physics.ApplyImpulse(d, p.visual.getPos());
                     }
@@ -489,15 +499,19 @@ muu.whenReady(function(){
             });
                 p.updateEffects(10);
             })
-            world.Step(1/50, 8);
+            world.Step(1/50, 8); // Simulate step
+
+            // Get next fluzzy
             var c = emitter.getNext();
             if (c.none){}
+            // If this is the end
             else if(c.end){
-                if(params[1]==="0" && !passed){
+                if(params[1]==="0" && !passed){ setTimeout(function(){
                     stop=true; play.change("play"); lastTime = 0;
                     instructions.css("background-image", "url(assets/instruction2.png)").show();
-                }
+                }, 5000)}
             }
+            // Create fluzzy
             else if(c){
                 emitter.visual.change("in-open")
                 setTimeout(function(){emitter.visual.change("in")}, 1500);
@@ -522,6 +536,7 @@ muu.whenReady(function(){
             }
             world.ClearForces();
         }
+        // Blink effects
         $.each(balls, function(i,v){
             if(Math.abs(v.physics.GetAngularVelocity())>10)
                 if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
@@ -547,12 +562,6 @@ muu.whenReady(function(){
             v.visual.rotation(rot);
             v.visual.moveTo(pos.x, pos.y);
         });
-           // for(var c=world.GetContactList(); c; c = c.GetNext()){
-              //  var a = listener.PreSolve(c.getBodies()[0], c.getBodies()[1])
-             //   if(a) if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
-        //    }
-              //  todelete;
-              //  ntodelete = {};
     }
     muu.render();
     requestAnimationFrame(render);
