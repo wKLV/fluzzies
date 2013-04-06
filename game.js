@@ -184,7 +184,7 @@ muu.whenReady(function(){
                         var shape = v.shape, position= v.position, l = [];
                         $.each(shape, function(i,v){
                             l.push(new b2Vec2(shape[i].x, shape[i].y))
-                            shape[i] = new v2(shape[i].x, shapue[i].y)
+                            shape[i] = new v2(shape[i].x, shape[i].y)
                          });
                          // If it is the visual of the megashape
                          if(v.visual){
