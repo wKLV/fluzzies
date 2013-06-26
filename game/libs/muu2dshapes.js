@@ -16,7 +16,7 @@ Rect.prototype.size = function(x,y){
 Rect.prototype.region = function(){
 	if (arguments.length) console.log("you can't overwrite the region of a rectangle");
 	var t = this;
-	return new rRect(function(){return v2.scalar(this._size, -0.5).add(t.getAbsPos())}, function(){return t._size});
+	return new rRect(function(){return v2.scalar(-0.5,  t._size).add(t.getAbsPos())}, function(){return t._size});
 }
 
 Rect.prototype.paintTo = function(context){
@@ -24,9 +24,9 @@ Rect.prototype.paintTo = function(context){
 	context.translate(this.getPos().x, this.getPos().y);
 	context.rotate(this.rotation());
 	context.fillStyle = this.fill();
-	context.fillRect(0, 0, this.size().x, this.size().y);
+	context.fillRect(-this.size().x/2, -this.size().y/2, this.size().x, this.size().y);
 	context.strokeStyle = this.stroke();
-	context.strokeRect(0, 0, this.size().x, this.size().y);
+	context.strokeRect(-this.size().x/2, -this.size().y/2, this.size().x, this.size().y);
 	context.rotate(-this.rotation());
 	context.translate(-this.getPos().x, -this.getPos().y)
 	context.scale(1/this.scale(), 1/this.scale());

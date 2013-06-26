@@ -21,10 +21,11 @@ speed = 1, Step = 10; //Speed changes how many steps are processed in real time.
 var star1 = star2 = star3 = false // We start without stars :(
 // Add stuff
 muu.addAtlas("assets/graphics.png", "assets/graphics.js");
+muu.addAtlas("assets/blueprint.png", "assets/blueprint.js");
 var staticroot = muu.addCanvas("static", false);
 var dinroot = muu.addCanvas("dinamic", true);
 muu.whenReady(function(){
-    var map, ready = false, stop = false,
+    var map, ready = false, stop = true,
     emitter, ground = new Layer,
     base, basein, menu = new Layer,
     menubackround = new Rect().size(100,600).fill("rgb(250, 245, 225)").moveTo(1400, 200),
@@ -41,7 +42,7 @@ muu.whenReady(function(){
     star2s = new Sprite("star").size(20,20).moveTo(390, 10),
     star3s = new Sprite("star").size(20,20).moveTo(430, 10),
     checkStars, passed = false,
-    play = new Sprite("pause").size(70,70).moveTo(1260,60),
+    play = new Sprite("play").size(70,70).moveTo(1260,60),
     reset, resetlabel = new Sprite("Reset").size(70,70).moveTo(1440,60),
     timeplus = new Sprite("timeplus").size(70,70).moveTo(1350, 60)
     play.event(["mousedown"], function(e){
@@ -96,7 +97,7 @@ muu.whenReady(function(){
         ready = true;
         emitter = new COOLYEMITTER(data.emitter);
         base = emitter.visual.moveTo(data.emitter.position[0], data.emitter.position[1]),
-        basein = new Sprite("in").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
+        basein = new Sprite("in-blue").size(150, 150).moveTo(data.catcher.position[0], data.catcher.position[1])
         layer.add(base).add(basein);
 
         var binbodydef = new b2BodyDef;
@@ -116,7 +117,7 @@ muu.whenReady(function(){
         // function to check if we have won a star or pass to the next level
         checkStars = function(){
             if(!passed && nballs >= basin.pass.coolies && (ntouches <= basin.pass.touches || typeof basin.pass.touches === "undefined")){
-                passed = true; basein.change("in-open"); pass.change("doorgot");
+                passed = true; basein.change("in-open-blue"); pass.change("doorgot");
                 if(params[1] === "0"){
                     stop= true; play.change("play"); instructions.css("background-image", "url(assets/instruction1.png)").show(); lastTime = 0;
                 }
@@ -175,7 +176,7 @@ muu.whenReady(function(){
 
                     createGround(v, l);
                     var shape = v.shape, position= v.position, l = [];
-                    var vis = new Polygon(shape).fill(texture).stroke('rgb(0,0,0)').moveTo(position.x, position.y);
+                    var vis = new Polygon(shape).fill("rgba(255,255,255, 0)").stroke('rgb(255,255,255)').moveTo(position.x, position.y);
                     ground.add(vis);
                 }
                 // If it is a sum of various polygons
@@ -188,7 +189,7 @@ muu.whenReady(function(){
                          });
                          // If it is the visual of the megashape
                          if(v.visual){
-                            var vis = new Polygon(v.shape).fill(texture).stroke(3, 'rgb(0,0,0)').
+                            var vis = new Polygon(v.shape).fill("rgba(5,255,255, 0)").stroke(3, 'rgb(255,255,255)').
                             moveTo(position.x, position.y);
                             ground.add(vis);
                         }
@@ -229,7 +230,7 @@ muu.whenReady(function(){
         //Load the powers
         $.each(data.powers, function(i,v){
             // The sprite in the menu
-            var s = new Sprite(v).size(75,75).moveTo(1500-50, 250+95*i);
+            var s = new Sprite(v+"-blue").size(75,75).moveTo(1500-50, 250+95*i);
             menu.add(s);
             // the layer of the power with its effects
             var layer = new Layer;
@@ -264,7 +265,7 @@ muu.whenReady(function(){
             s.event(["mousedown"], function(e){
                 menu.rem(s);
                 staticroot.render();
-                s.size(100,100).moveTo(0,0);
+                s.size(150,150).moveTo(0,0);
                 layer.add(s);
                 power = {visual:layer, power:v};
                 pows.add(layer);
@@ -323,7 +324,7 @@ muu.whenReady(function(){
     else{
         var renderSuccess = function(){
             $.each(balls, function(i,v){
-            if(Math.abs(v.physics.GetAngularVelocity())>10)
+      /*      if(Math.abs(v.physics.GetAngularVelocity())>10)
                 if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
                     v.visual.change("pelusa"+v.hab+"eyesmouth")
                 else
@@ -339,7 +340,7 @@ muu.whenReady(function(){
                         setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
                     else
                         v.visual.change("pelusa"+v.hab)
-
+*/
             var pos = v.physics.GetWorldCenter().Copy();
             var rot = v.physics.GetAngle();
 
@@ -416,8 +417,8 @@ muu.whenReady(function(){
             if(b.GetUserData().name === "spikes"){
                 if(!deleted[a.GetUserData().id]) todelete[a.GetUserData().id] = a, deleted[a.GetUserData().id]=true;
             } else if(b.GetUserData().name === "in"){
-                b.GetUserData().visual.change("in-open")
-                setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in")}, 1500);
+                b.GetUserData().visual.change("in-open-blue")
+                setTimeout(function(){ if(!passed)b.GetUserData().visual.change("in-blue")}, 1500);
                 nballs ++;
                 nballslabel.text(""+nballs).scale(2);
                 setTimeout(function(){
@@ -439,8 +440,8 @@ muu.whenReady(function(){
                 }, 1500);
                 staticroot.render();
                 checkStars();
-                a.GetUserData().visual.change("in-open")
-                setTimeout(function(){if(!passed)a.GetUserData().visual.change("in")}, 500);
+                a.GetUserData().visual.change("in-open-blue")
+                setTimeout(function(){if(!passed)a.GetUserData().visual.change("in-blue")}, 500);
                 if(!deleted[b.GetUserData().id]) todelete[b.GetUserData().id] = b, deleted[b.GetUserData().id]=true;
             }
     }
@@ -513,8 +514,8 @@ muu.whenReady(function(){
             }
             // Create fluzzy
             else if(c){
-                emitter.visual.change("in-open")
-                setTimeout(function(){emitter.visual.change("in")}, 1500);
+                emitter.visual.change("in-open-blue")
+                setTimeout(function(){emitter.visual.change("in-blue")}, 1500);
                 ids ++;
                 var hab = c.hability;
                 switch(c.hability){
@@ -538,7 +539,7 @@ muu.whenReady(function(){
         }
         // Blink effects
         $.each(balls, function(i,v){
-            if(Math.abs(v.physics.GetAngularVelocity())>10)
+   /*         if(Math.abs(v.physics.GetAngularVelocity())>10)
                 if(Math.abs(v.physics.GetLinearVelocity().Length() > 100) && v.physics.GetContactList())
                     v.visual.change("pelusa"+v.hab+"eyesmouth")
                 else
@@ -554,7 +555,7 @@ muu.whenReady(function(){
                         setTimeout(function(){v.visual.change("pelusa"+v.hab);},1000);
                     else
                         v.visual.change("pelusa"+v.hab)
-
+*/
 
             var pos = v.physics.GetWorldCenter().Copy();
             var rot = v.physics.GetAngle();

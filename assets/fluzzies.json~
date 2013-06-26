@@ -1,0 +1,58 @@
+{
+"pelusaheavybody":{
+    "size":{"x": 93,"y": 93},
+    "position":{"x":5, "y":5}
+}, 
+
+"pelusaheavyeyesclosed":{
+    "size":{"x": 72,"y": 38},
+    "position":{"x":108, "y":5}
+}, 
+
+"pelusaheavyeyesopened":{
+    "size":{"x": 72,"y": 38},
+    "position":{"x":108, "y":53}
+}, 
+
+"pelusaheavymouthclosed":{
+    "size":{"x": 28,"y": 7},
+    "position":{"x":190, "y":5}
+}, 
+
+"pelusaheavymouthopened":{
+    "size":{"x": 141,"y": 78},
+    "position":{"x":5, "y":108}
+}, 
+
+"pelusanonebody":{
+    "size":{"x": 60,"y": 60},
+    "position":{"x":156, "y":101}
+}, 
+
+"pelusanoneeyesopen":{
+    "size":{"x": 72,"y": 38},
+    "position":{"x":156, "y":171}
+}, 
+"pelusakawaiiyeyesclosed":{
+    "size":{"x": 72,"y": 38},
+    "position":{"x":156, "y":171}
+}, 
+"pelusanoneeyesopened":{
+    "size":{"x": 72,"y": 38},
+    "position":{"x":228, "y":5}
+}, 
+
+"pelusanonemouthclosed":{
+    "size":{"x": 113,"y": 29},
+    "position":{"x":190, "y":53}
+}, 
+
+"pelusanonemouthopened":{
+    "size":{"x": 141,"y": 78},
+    "position":{"x":313, "y":5}
+},
+"pelusakawaiieyesopened":{
+   "size":{"x":74, "y":32},
+   "position":{"x":229, "y":101}
+}
+}

@@ -106,10 +106,12 @@ function v2 (x,y){
 
 v2.add = function(x,y){
 		var tx = this.x || 0, ty = this.y || 0;
-		if(x instanceof v2){
-			if(y instanceof v2)
+		if(typeof(x.x) !== "undefined"){
+            if(typeof(y)=== "undefined")
+                tx += x.x, ty += x.y;
+			else if(typeof(y.x) !== "undefined")
 				tx = x.x +y.x, ty = x.y+ y.y;
-			else tx += x.x, ty += x.y;
+            else console.log("sum error of "+y)
 		}
 		else {
 			tx += x;
@@ -123,7 +125,7 @@ v2.add = function(x,y){
 v2.prototype.add =  v2.add
 
 v2.minus = function(v){
-	if(typeof this.x !== "undefined" || isNaN(this.x))
+	if(typeof this.x === "undefined" || isNaN(this.x))
 		return new v2(-v.x, -v.y)
 	else
 		this.x = - this.x, this.y = -this.y
@@ -146,7 +148,7 @@ v2.dot = function(x,y){
 		if(x instanceof v2)
 			if(typeof this.x === "undefined" && y instanceof v2)
 				return x.x*y.x +x.y*y.y;
-			else return this.x *x.x + this.y+ x.y;
+			else return this.x *x.x + this.y* x.y;
 		else return this.x*x+this.y*y
 	}
 
@@ -156,8 +158,12 @@ v2.prototype.lenSquared = function(){
 		return this.dot(this);
 	}
 v2.prototype.len = function (){
-		return Math.sqrt(this.lenSquared);
+		return Math.sqrt(this.lenSquared());
 	}
+
+v2.norm = function(v){
+    return v2.scalar(1/v.len(), v)
+}
 v2.prototype.norm = function(){
 		var l = this.len();
 		return new v2(this.x/l, this.y/l);
@@ -253,7 +259,7 @@ muuNode.prototype.follow = function(node, v){
 
 muuNode.prototype.unfollow = function(){
     //Get this position to be what it looks like
-    this.position.add(v2.add(this.getAbsPos(), v2.minus(this.position))).add(this._followv2)
+    this.position.add(v2.add(this.getAbsPos(), v2.minus(this.position)))//.add(this._followv2)
 	this._follow = false;
 }
 
