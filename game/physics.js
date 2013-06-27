@@ -60,6 +60,7 @@ function twoCollide(a,b){
          var fluzzy = a.GetUserData();
          fluzzy.physics = a;
          fluzzyDie(fluzzy);
+         dfluzzies++;
          break;
    }
    return true;

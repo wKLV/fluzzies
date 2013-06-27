@@ -7,6 +7,7 @@
 
 var static, groundL, uiL, dinroot, powersL, fluzziesL, fluzzies = [];
 var initLogic;
+var tutos = [];
 window.onload = function(){
     static = muu.addCanvas("static", false),
     groundL = new Layer(); static.add(groundL);
@@ -104,6 +105,25 @@ window.onload = function(){
                 }
                 logicobjs = nl; delete nl; todelete = [];
             }
+
+            for(i=0; i<tutos.length; i++){
+                var t = true;
+                for(var j in tutos[i].conds) if(!tutos[i].conds[j]()){ t = false; break; }
+                if(t){
+                    tutos[i].callback(); stopTime(); todelete.push(i);
+                }
+            }
+
+            if(todelete.length){
+                var ctut = [].concat(tutos);
+                var nl = ctut.splice(0, todelete[0])
+                for(i=0; i<todelete.length; i++){
+                    var ctut = [].concat(tutos);
+                    var nl = nl.concat(ctut.splice(todelete[i]+1, i+1<todelete.length?todelete[i]-todelete[i+1]-1:ctut.length-todelete[i]));
+                }
+                tutos = nl; delete nl; delete ctut; todelete = [];
+            }
+
             runSteps(s); // Run PHYSICS
 
             updateGraphics(s) // Update fluzzies and stuff
@@ -122,4 +142,23 @@ window.onload = function(){
     }
 }
 
+function addTuto(condition, callback){
+    var equalityChecker = function(cond){
+        var ts = cond.split("=");
+        return function(){return eval(ts[1]+"==="+ts[2])}
+    }
+    var greaterChecker = function(cond){
+        var ts = cond.split(">");
+        return function(){return eval(ts[1]+">"+ts[2])}
+    }
+
+    var conds = condition.split(";");
+    var nconds = [];
+    for(var i=0; i<conds.length; i++){
+        if(conds[i]==="init") nconds.push(function(){return true})
+        else if(conds[i][0] === "=") nconds.push(equalityChecker(conds[i]))
+        else if(conds[i][0]=== ">") nconds.push(greaterChecker(conds[i]))
+    }
+    tutos.push({conds:nconds, callback:callback});
+}
 

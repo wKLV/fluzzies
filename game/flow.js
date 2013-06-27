@@ -116,7 +116,7 @@ function initPowers(powers){
          // Remove this event
          sm.clearEvent("mousedown");
          sm.event(["mousedown"], function(e){
-            if(!powerL.follow)
+            if(!powerL._follow)
                 increaseTouch()
             powerL.follow(muu.getMouse());
          });
@@ -127,7 +127,7 @@ function initPowers(powers){
 }
 
 var Step = 10, speed = 1, ongame = true;
-var fluzziesin = 0; touches = 0;
+var fluzziesin = 0; dfluzzies =0; touches = 0;
 function setFlow(maptype){
 
 }
@@ -185,7 +185,7 @@ function increaseTouch(){
 }
 
 function checkStars(){
-    if(pass !== true) if(fluzziesin > pass.coolies && (touches < pass.touches || !pass.touches)) {pass = true; passIcon.change("doorgot")}
+    if(pass !== true) if(fluzziesin >= pass.coolies && (touches < pass.touches || !pass.touches)) {pass = true; passIcon.change("doorgot")}
     if (star1 !== true) if(fluzziesin >= star1.coolies && (touches <= star1.touches || !star1.touches)) {star1 = true; star1Icon.change("stargot")}
     if (star2 !== true) if(fluzziesin >= star2.coolies && (touches <= star2.touches || !star2.touches)) {star2 = true; star2Icon.change("stargot")}
     if (star3 !== true) if(fluzziesin >= star3.coolies && (touches <= star3.touches || !star3.touches)) {star3 = true; star3Icon.change("stargot")}
