@@ -1,0 +1,26 @@
+{
+"atra-blue":{
+    "size":{"x": 212,"y": 212},
+    "position":{"x":5, "y":5}
+}, 
+
+"in-open-blue":{
+    "size":{"x": 95,"y": 97},
+    "position":{"x":227, "y":5}
+}, 
+
+"in-blue":{
+    "size":{"x": 95,"y": 97},
+    "position":{"x":227, "y":112}
+}, 
+
+"anti-blue":{
+    "size":{"x": 212,"y": 212},
+    "position":{"x":332, "y":5}
+}, 
+
+"pelusablueprint":{
+    "size":{"x": 150,"y": 145},
+    "position":{"x":5, "y":227}
+}
+}
