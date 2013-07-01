@@ -44,7 +44,7 @@ window.onload = function(){
         var logicobjs = [];
         initLogic = function(){
             for (var i=0; i<fluzzies.length; i++){
-                fluzzyDie({visual:fluzzies[i], physics:fluzzies[i].physics()})
+                fluzzyDie({visual:fluzzies[i]})
                 delete fluzzies[i];
             }
             fluzzies = [];
@@ -89,7 +89,7 @@ window.onload = function(){
             // Time is difference of this time and last or this time if there is no previous
             dt = lt ? t -lt : t;
             lt = t;
-
+            fluzzyDie();
             var s = getSteps(dt);
 
             for(var i=0; i<logicobjs.length; i++){

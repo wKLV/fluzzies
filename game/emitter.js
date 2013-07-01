@@ -48,8 +48,8 @@ function createEmitter(parameters){
             coolies ++; if(this.i.i<15) this.i.i ++;
             if(!c.none){
             return function(){
-                parameters.visual.change("in-open");
-                setTimeout(function(){parameters.visual.change("in")},1000)
+                parameters.visual.change("entrance-open").size(127.6,200);
+                setTimeout(function(){parameters.visual.change("entrance-closed")},1000)
                 fluzzies.push(FluzzyM(c.cooly.hability));
                 fluzziesL.add(fluzzies[fluzzies.length-1].moveTo(parameters.position[0], parameters.position[1]));
                 if(c.cooly.hability === "none") makeNoneFluzzyPhysics(fluzzies[fluzzies.length-1])

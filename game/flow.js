@@ -158,11 +158,32 @@ function startTime(){
    playButton.change("pause");
 }
 
-
+fluzziestodelete =[];
 function fluzzyDie(fluzzy){
-    fluzziesL.rem(fluzzy.visual);
-   // fluzzies.pop(fluzzy.id);
-    world.DestroyBody(fluzzy.physics);
+    if(typeof(fluzzy)=== "undefined"){if(fluzziestodelete.length){
+        for(var i=0; i<fluzziestodelete.length; i++){
+            var fluzzy = fluzziestodelete[i];
+            fluzziesL.rem(fluzzy.visual);
+            if(fluzzy.visual._physics)
+            world.DestroyBody(fluzzy.visual.physics());
+            delete fluzzy.visual._physics;
+        }
+        var ctut = [].concat(fluzzies);
+        var nl = ctut.splice(0, fluzziestodelete[0].id)
+        if(fluzzies.length > 1)
+        for(i=0; i<fluzziestodelete.length; i++){
+            var ctut = [].concat(fluzzies);
+            var nl = nl.concat(ctut.splice(fluzziestodelete[i].id+1,
+                i+1<fluzziestodelete.length?fluzziestodelete[i+1].id-fluzziestodelete[i].id-1:ctut.length-fluzziestodelete[i].id));
+        }
+        fluzzies = nl; delete nl; delete ctut; fluzziestodelete = [];
+        for(i=0; i<fluzzies.length;i++){
+            if(!fluzzies[i]._physics)
+                console.log("red alert")
+            fluzzies[i].physics().GetUserData().id = i;
+        }
+    }}
+    else fluzziestodelete.push(fluzzy);
 }
 
 function fluzzyEnters(fluzzy, door){

@@ -52,13 +52,11 @@ function twoCollide(a,b){
    switch(b.GetUserData().name){
       case "in":
          var fluzzy = a.GetUserData();
-         fluzzy.physics = a;
          fluzzyDie(fluzzy);
          fluzzyEnters(fluzzy, b.GetUserData().visual);
          break;
       case "spikes":
          var fluzzy = a.GetUserData();
-         fluzzy.physics = a;
          fluzzyDie(fluzzy);
          dfluzzies++;
          break;
@@ -104,10 +102,10 @@ function makeNoneFluzzyPhysics(f){
     var v = new b2BodyDef;
     v.type = b2Body.b2_dynamicBody;
     v.position.Set(f.getPos().x, f.getPos().y);
-    v.userData = {name:"fluzzy", visual:f, id:fluzzies.length, hab:"none"};
+    v.userData = {name:"fluzzy", visual:f, id:fluzzies.length-1, hab:"none"};
     v.angularDamping = 0;
-    normalDef.id = fluzzies.length;
-    normalDef.shape = new b2CircleShape(20);
+    normalDef.id = fluzzies.length-1;
+    normalDef.shape = new b2CircleShape(15);
     f.physics(normalDef, v);
 }
 
@@ -119,10 +117,10 @@ function makeHeavyFluzzyPhysics(f){
     var v = new b2BodyDef;
     v.type = b2Body.b2_dynamicBody;
     v.position.Set(f.getPos().x, f.getPos().y);
-    v.userData = {name:"fluzzy", visual:f, id:fluzzies.length, hab:"heavy"};
+    v.userData = {name:"fluzzy", visual:f, id:fluzzies.length-1, hab:"heavy"};
     v.angularDamping = 0;
-    normalDef.id = fluzzies.length;
-    normalDef.shape = new b2CircleShape(20);
+    normalDef.id = fluzzies.length-1;
+    normalDef.shape = new b2CircleShape(15);
     f.physics(normalDef, v);
 }
 

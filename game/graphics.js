@@ -15,7 +15,7 @@ function loadAssets(type){
         muu.addAtlas("assets/fluzzies.png", "assets/fluzzies.json")
         muu.addAtlas("assets/Metal Fluzzies.png", "assets/Metal Fluzzies.js");
     }
-    muu.addAtlas("assets/normal.png", "assets/normal.js");
+    muu.addAtlas("assets/atlas2.png", "assets/atlas2.js");
 
     img.src = "assets/Metal.png"
 }
@@ -30,8 +30,8 @@ function getGroundGraphics(g){
 
 function getWorldAsset(info){
     switch(info){
-	case "catcher":
-        case "emitter": return new Sprite("in").size(150,150);
+        case "emitter": return new Sprite("entrance").size(154.4,200);
+        case "catcher": return new Sprite("in").size(150,150)
         case "spikes": return new Sprite("spikes").size(260,100)
     }
 }
