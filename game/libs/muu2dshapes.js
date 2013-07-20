@@ -93,8 +93,8 @@ Polygon.prototype.paintTo = function(context){
 	context.translate(-this.getPos().x, -this.getPos().y)
 }
 
-function Label(text){
- this._text = text || "Hello world";
+function Label(text, width){
+ this._text = text || "Hello world", this._width = width || 1;
 }
 
 Label.prototype = new Paintable();
@@ -107,12 +107,20 @@ Label.prototype.text = function(t){
     return this;
 }
 
+Label.prototype.width = function(w){
+    if(typeof w === "undefined")
+        return this._width;
+    else this._width = w;
+    return this;
+}
+
 Label.prototype.paintTo = function(context){
 	context.translate(this.getPos().x, this.getPos().y);
 	context.rotate(this.rotation());
 	context.scale(this.scale(), this.scale());
 	context.fillStyle = this.fill();
 	context.fillText(this._text,0,0)
+    context.lineWidth = this.width();
 	context.strokeStyle = this.stroke();
 	context.strokeText(this._text,0,0);
 	context.scale(1/this.scale(), 1/this.scale());

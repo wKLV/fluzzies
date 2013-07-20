@@ -1,13 +1,5 @@
 {
     "logicobjs": {
-        "spikes": 
-            [{
-                "position": {
-                    "x": 900,
-                    "y": 800
-                }
-            }
-        ],
         "emitters": [
             {
                 "sequence": {
@@ -16,7 +8,7 @@
                         "velocity": 5
                     },
                     "many": 35,
-                    "time": 250
+                    "time": 5000
                 },
                 "position": [
                     85,
@@ -44,6 +36,14 @@
                     900,
                     310
                 ]
+            }
+        ],
+        "spikes": [
+            {
+                "position": {
+                    "x": 900,
+                    "y": 800
+                }
             }
         ]
     },
@@ -92,9 +92,10 @@
                 }
             ]
         }
-    ],
+    ]
+    ,
     "powers": [
         "anti",
-        "atra"
+        "anti"
     ]
 }

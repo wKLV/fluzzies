@@ -201,7 +201,7 @@ function muuNode (){
 }
 
 muuNode.prototype.moveTo = function(pos, y){
-	if(pos instanceof v2) this.position = pos;
+	if(pos.x) this.position = new v2(pos.x, pos.y);
 	else this.position = new v2(pos, y);
 	return this;
 }

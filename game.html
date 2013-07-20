@@ -41,7 +41,8 @@ $("#tuto").dialog({
     },
     hide:{
         effect:"blind", duration:100
-    }
+    },
+    close:startTime
 })
 var currentlevel = parseInt(document.URL.split("?")[2]), mode = document.URL.split("?")[1];
 function printTuto(text1, text2){ return function(){

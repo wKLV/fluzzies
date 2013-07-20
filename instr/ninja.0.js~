@@ -1,7 +1,7 @@
-[{"on":"init", "text1":"Welcome to fluzzies, the game. In this game fluzzies will come out from the exit on the top corner and you will have to bring them to the bottom exit", 
-"text2":"Press the play button to try it!"},
-{"on":"=dfluzzies=1", "text1":"Oh, the fluzzies die if they fall on the spikes! You will have to make them jump the gap", "text2":"Grab the yellow repulsion power from the right menu and try to push a fluzzy to the exit"},
-{"on":"=fluzziesin=1", "text1":"Very good job!", "text2": "Now try to find a place where you can place the power and the fluzzies enter without you having to do it. Try inside the metal ground"},
-{"on":"=fluzziesin=5", "text1":"Excellent! You have got enough fluzzies in to pass to the next level", "text2": "To do so click on the exit, then it will bring you to the completed level screen"},
-{"on":">touches>1;>fluzziesin>1", "text1":"You have moved the power more than two times. You can see how many times in the hand icon on the top right corner. You can also see how many fluzzies you got into in the fluzzy icon", "text2":"Having moved the power more than one time you can't get the second or third star, which are got getting 5 fluzzies and 10 fluzzies with one touch. You can click the reset button to try to get more stars"}
+[{"on":"init", "text1":"Welcome to fluzzies. Your goal is to guide the fluzzies to the exit safe and sound.", 
+"text2":"Press the play button to begin the testing!"},
+{"on":"=dfluzzies=1", "text1":"Be careful! Fluzzies will die if they fall onto spikes or burn.", "text2":"ry using the yellow repulsion power from the menu on the right to make them jump over the danger."},
+{"on":"=fluzziesin=1", "text1":"Nice!", "text2": "Now try to find somewhere to place the power so that every fluzzy gets to the exit."},
+{"on":"=fluzziesin=5", "text1":"Excelent!You've helped enough fluzzies to advance to the next level.", "text2": "To do so click on the exit, then it will bring you to the completed level screen"},
+{"on":">touches>1;>fluzziesin>1", "text1":"Do you see the finger-shaped icon? That's the click counter, it displays the number of times you've moved the powers around the level.", "text2":"By using a minimal amount of moves you will win a star. This amount is 1 move per power. If you get almost every fluzzy in you will get other, and if you get them all with one touch per power you get the three stars."}
 ]

@@ -15,7 +15,7 @@
                     "many": 2,
                     "cooly": [
                         {
-                            "time": 5000,
+                            "time": 250,
                             "many": 15,
                             "cooly": {
                                 "hability": "none",
@@ -23,7 +23,7 @@
                             }
                         },
                         {
-                            "time": 5000,
+                            "time": 250,
                             "many": 5,
                             "cooly": {
                                 "hability": "heavy",
