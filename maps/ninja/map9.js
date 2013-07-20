@@ -34,7 +34,7 @@
                         "velocity": 5
                     },
                     "many": 40,
-                    "time": 5000
+                    "time": 250
                 },
                 "position": [
                     85,

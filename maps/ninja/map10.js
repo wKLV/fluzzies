@@ -8,7 +8,7 @@
                         "velocity": 5
                     },
                     "many": 50,
-                    "time": 5000
+                    "time": 250
                 },
                 "position": [
                     500,

@@ -97,7 +97,6 @@ function initPowers(powers){
         }
         // When you press on a power in the menu
         sm.event(["mousedown"], function(e){
-            if(mode === "puzzle" && !planning) return;
             increaseTouch();
             pows.push({power:p, visual:powerL});
             menuPowers.rem(sm);
@@ -110,12 +109,8 @@ function initPowers(powers){
             activePowers.push({power:p});
             switch(p){
             case 'anti': addGraphUpdate(function(dt){
-                if(mode !== "puzzle" || !planning){
-                antisprite.size(100,100);
                 var r = antisprite.rotation();
                 antisprite.rotation(r-dt/48)
-                }
-                else{ antisprite.size(150,150); }
                 r = antifield.scale();
                 r += dt/80;
                 r %= 1;
@@ -129,12 +124,8 @@ function initPowers(powers){
                });
                break;
             case 'atra': addGraphUpdate(function(dt){
-                if(mode !=="puzzle" || !planning){
-                antisprite.size(100,100);
                 var r = antisprite.rotation();
                 antisprite.rotation(r-dt/48)
-                }
-                else{ antisprite.size(150,150); }
                 r = antifield.scale();
                 r = -r +1
                 r += dt/80;
@@ -148,8 +139,6 @@ function initPowers(powers){
                 });
                 break;
             case 'accele': addGraphUpdate(function(dt){
-                if(mode === "puzzle" && planning) rotateSprite.size(150,150)
-                else rotateSprite.size(100,100);
                 var r = rotateSprite.rotation();
                 rotateSprite.rotation(r-dt*10)
                 rotateField.rotation(r-dt);
@@ -203,9 +192,8 @@ function stopTime(){
 }
 
 function startTime(){
-    ongame = true;
-    if(mode !== "puzzle" || !planning)
-        playButton.change("pause");
+   ongame = true;
+   playButton.change("pause");
 }
 
 fluzziestodelete =[]; fluzziesids = {};
@@ -219,7 +207,7 @@ function fluzzyDie(fluzzy){
             delete fluzzy.visual._physics;
         }
         var i0 = -1, nl = [];
-        if(fluzzies.length > 1){
+        if(fluzzies.length > 1)
         $.each(fluzziesids, function(i,v){
             i = parseInt(i);
             var ctut = [].concat(fluzzies);
@@ -228,8 +216,7 @@ function fluzzyDie(fluzzy){
         });
         var ctut = [].concat(fluzzies);
         nl = nl.concat(ctut.splice(i0+1, fluzzies.length-1-i0))
-        }
-        fluzzies = nl; delete nl; delete ctut;
+        fluzzies = nl; delete nl; delete ctut; 
         for(i=0; i<fluzzies.length;i++){
             if(!fluzzies[i]._physics)
                 console.log("red alert")
@@ -243,13 +230,12 @@ var pass, star1, star2, star3;
 function fluzzyEnters(fluzzy, door){
     // SCORE STUFF
     fluzziesin++;
-    if(fluzziesin === pass.coolies)
-        static.add(new Label("next level").moveTo(door.getPos().x-32.5, door.getPos().y).stroke("rgb(200,255,200)").scale(1.5))
     checkStars();
     // EFFECTS STUFF
     door.op(door);
     if(pass !== true)
         setTimeout(function(){door.cl(door)}, 1000)
+
     fluzzyNumber.text(""+fluzziesin).scale(2); static.render();
     setTimeout(function(){fluzzyNumber.scale(1.5); static.render()}, 1500)
 }

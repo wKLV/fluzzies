@@ -108,6 +108,7 @@ Fluzzy.prototype.paintTo = function(context){
 Fluzzy.prototype._defShape = function(){return new b2CircleShape(30)};
 
 function FluzzyM(what){
+    if(mode !== "puzzle" || !planning)
     switch(what){
         case "none":
             return new Fluzzy({color:"#cab568", body:"pelusanonebody", eyes:"pelusakawaiieyes", mouth:"pelusanonemouth",
@@ -120,5 +121,18 @@ function FluzzyM(what){
                                 hairs:[{hairs:55, displx:0, disply:0, radius:30, basewidth:3.8, randomwidth:3.6,
                                         baselength:9, randomlength:10.5}]})
 
+    }
+    else
+    switch(what){
+        case "none":
+            return new Fluzzy({color:"#ffffff", body:"nothing", eyes:"nothing", mouth:"nothing",
+                                size:60, eyessize:0, mouthsize:0, eyesposx:0, eyesposy:0, mouthposx:0, mouthposy:0,
+                                hairs:[{hairs:50, displx:0, disply:0, radius:30, basewidth:1.7, randomwidth:2,
+                                        baselength:10, randomlength:5}]})
+        case "heavy":
+            return new Fluzzy({color:"#ffffff", body:"nothing", eyes:"nothing", mouth:"nothing",
+                                size:60, eyessize:0, mouthsize:0, eyesposx:0, eyesposy:0, mouthposx:0, mouthposy:0,
+                                hairs:[{hairs:55, displx:0, disply:0, radius:30, basewidth:3.8, randomwidth:3.6,
+                                        baselength:9, randomlength:10.5}]})
     }
 }

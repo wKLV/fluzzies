@@ -1,4 +1,16 @@
 {
+"nothing":{
+    "size":{"x":1, "y":1},
+    "position":{"x":0, "y":0}
+},
+"nothing-opened":{
+    "size":{"x":1, "y":1},
+    "position":{"x":0, "y":0}
+},
+"nothing-closed":{
+    "size":{"x":1, "y":1},
+    "position":{"x":0, "y":0}
+},
 "pelusaheavybody":{
     "size":{"x": 93,"y": 93},
     "position":{"x":5, "y":5}
@@ -33,7 +45,7 @@
     "size":{"x": 72,"y": 38},
     "position":{"x":156, "y":171}
 }, 
-"pelusakawaiiyeyesclosed":{
+"pelusakawaiieyesclosed":{
     "size":{"x": 72,"y": 38},
     "position":{"x":156, "y":171}
 }, 
